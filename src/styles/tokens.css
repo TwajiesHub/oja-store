@@ -1,0 +1,30 @@
+/* Design tokens from TASTE.md. */
+:root {
+  --paper: #f4f1ea;
+  --ink: #121110;
+  --stone: #e4ded2;
+  --stone-dark: #d8d1c3;
+  --line: #cfc8bb;
+  --mute: #6a645b;
+  --field: #fbfaf6;
+  --ok: #1f6f6b;
+  --error: #9e2b2b;
+
+  --font-body: 'Archivo', 'Helvetica Neue', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --page-gutter: 20px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-gutter: 40px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --page-gutter: 56px;
+  }
+}

@@ -1,0 +1,25 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.db
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+
+# Vercel
+.vercel/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -101,6 +101,7 @@ Names match what is set in Vercel. `.env.example` lists them with no values.
 | `SUPABASE_SECRET_KEY` | **Yes** | Server | Not used by the app yet; reserved for admin scripts |
 | `SUPABASE_JWKS_URL` | No | Server | `<SUPABASE_URL>/auth/v1/.well-known/jwks.json` |
 | `DATABASE_URL` | **Yes** | Server | Transaction pooler (6543) on Vercel; defaults to `sqlite:///./oja.db` locally |
+| `DATABASE_URL_SESSION` | **Yes** | Scripts only | Session pooler (5432). Used by `python -m scripts.init_db --supabase`; never set on Vercel |
 | `PAYSTACK_SECRET_KEY` | **Yes** | Server | `sk_test_…`, also the webhook signing key |
 | `MAILGUN_API_KEY` | **Yes** | Server | Domain sending key |
 | `MAILGUN_DOMAIN` | No | Server | `sandbox….mailgun.org` for now |

@@ -90,7 +90,7 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt -r requirements-dev.txt
 python -m scripts.init_db        # create tables and seed the catalogue (local SQLite by default)
-uvicorn api.index:app --reload --port 8000
+uvicorn api.index:app --reload --port 8000 --env-file .env
 pytest
 ```
 
@@ -102,8 +102,8 @@ npm run dev      # http://localhost:5173, /api is proxied to :8000
 npm run build
 ```
 
-Seeding Supabase (only when I ask): set `DATABASE_URL` to the **session pooler**
-string (port 5432) in the terminal, then run `python -m scripts.init_db`.
+Seeding Supabase (only when I ask): put the **session pooler** string (port 5432) in
+`DATABASE_URL_SESSION` in `.env`, then run `python -m scripts.init_db --supabase`.
 
 ## Milestones and branches
 
