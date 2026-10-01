@@ -49,7 +49,7 @@ Tests: pytest ──▶ temporary SQLite, Paystack and Mailgun mocked
 │   ├── auth.py           JWKS token verification, current-user dependency
 │   ├── pricing.py        delivery fees, totals, order numbers, working-day dates
 │   ├── catalogue.py      brands, categories, products, edits (public, cached)
-│   ├── bag.py            the signed-in user's bag
+│   ├── bag.py            the guest bag quote now; the signed-in user's bag with auth
 │   ├── checkout.py       create order, start Paystack attempt, verify
 │   ├── paystack.py       Paystack client and webhook route
 │   ├── fulfilment.py     mark_paid(): the single idempotent payment handler
@@ -151,7 +151,7 @@ Base path `/api`. JSON in snake_case. Money in kobo. Errors use FastAPI's
 | `GET /api/products?category=&brand=&sort=&featured=` | product cards: id, slug, name, brand kit, from-price, image, in_stock |
 | `GET /api/products/{slug}` | product with variants (price, stock), brand, the edits it appears in |
 | `GET /api/edits` · `GET /api/edits/{slug}` | edits; one edit with ordered items, notes and default variants |
-| `POST /api/bag/quote` | body `{items: [{variant_id, quantity}]}` → server prices, stock flags and subtotal for a guest bag |
+| `POST /api/bag/quote` | body `{items: [{variant_id, quantity}]}` (quantity 1 to 10, at most 50 lines; any price sent is ignored) → `{lines, removed_variant_ids, item_count, subtotal_kobo, free_delivery_remaining_kobo}`. Each line has the server price, `stock`, the `quantity` that can be bought and `issue` (`sold_out`, `reduced` or null) |
 
 ### Signed in
 | Method and path | Body | Returns |

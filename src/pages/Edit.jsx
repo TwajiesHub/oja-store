@@ -63,7 +63,7 @@ function EditView({ edit, number, next }) {
   }
 
   function addOne(item, variant) {
-    const added = add(variant.id, 1, variant.stock)
+    const added = add(variant.id, 1, variant.stock, variant.price_kobo)
     setJustAdded(added > 0 ? item.product.id : null)
     setMessage(added > 0 ? '' : `${editItemTitle(item.product, variant)} is already in your bag at the most you can buy.`)
   }
@@ -78,7 +78,7 @@ function EditView({ edit, number, next }) {
         : item.default_variant
       if (!item.available) skipped.push({ title, reason: 'sold-out' })
       else if (!variant) skipped.push({ title, reason: 'needs-size' })
-      else if (add(variant.id, 1, variant.stock) > 0) added.push(title)
+      else if (add(variant.id, 1, variant.stock, variant.price_kobo) > 0) added.push(title)
       else skipped.push({ title, reason: 'maxed' })
     }
     setJustAdded(null)
