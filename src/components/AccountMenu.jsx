@@ -9,6 +9,7 @@ export default function AccountMenu() {
   const { pathname, search } = useLocation()
   const [open, setOpen] = useState(false)
   const root = useRef(null)
+  const button = useRef(null)
 
   useEffect(() => {
     setOpen(false)
@@ -20,7 +21,10 @@ export default function AccountMenu() {
       if (root.current && !root.current.contains(event.target)) setOpen(false)
     }
     function closeOnEscape(event) {
-      if (event.key === 'Escape') setOpen(false)
+      if (event.key === 'Escape') {
+        setOpen(false)
+        button.current?.focus()
+      }
     }
     document.addEventListener('mousedown', closeOnOutsideClick)
     document.addEventListener('keydown', closeOnEscape)
@@ -42,6 +46,7 @@ export default function AccountMenu() {
   return (
     <div className="account-menu" ref={root}>
       <button
+        ref={button}
         type="button"
         className="account-menu__button"
         aria-haspopup="true"

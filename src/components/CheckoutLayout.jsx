@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { Link, Outlet } from 'react-router-dom'
 
+import useFocusMain from '../hooks/useFocusMain.js'
+
 function LockIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
@@ -12,6 +14,7 @@ function LockIcon() {
 
 // Checkout and payment screens drop the shop's navigation: calmer, with one way back.
 export default function CheckoutLayout({ variant }) {
+  useFocusMain()
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
@@ -27,7 +30,7 @@ export default function CheckoutLayout({ variant }) {
           </>
         )}
       </header>
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <Outlet />
       </main>
     </div>
