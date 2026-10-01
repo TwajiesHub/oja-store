@@ -19,15 +19,15 @@ function pieces(count) {
   return `${count} ${count === 1 ? 'piece' : 'pieces'}`
 }
 
+const SKIP_MESSAGES = {
+  'sold-out': (title) => `${title} is sold out, so we left it out.`,
+  maxed: (title) => `${title} is already in your bag at the most you can buy.`,
+  'needs-size': (title) => `Choose a size for the ${title} to add it.`,
+}
+
 function addAllMessage(added, skipped) {
   const parts = [added.length ? `Added ${pieces(added.length)} to your bag.` : 'Nothing was added.']
-  for (const { title, reason } of skipped) {
-    parts.push(
-      reason === 'sold-out'
-        ? `${title} is sold out, so we left it out.`
-        : `${title} is already in your bag at the most you can buy.`,
-    )
-  }
+  for (const { title, reason } of skipped) parts.push(SKIP_MESSAGES[reason](title))
   return parts.join(' ')
 }
 
@@ -53,9 +53,16 @@ function EditView({ edit, number, next }) {
   const { add } = useBag()
   const [justAdded, setJustAdded] = useState(null)
   const [message, setMessage] = useState('')
+  // The size chosen for each sized item, by item position. Nothing is ever pre-chosen.
+  const [chosenSizes, setChosenSizes] = useState({})
 
-  function addOne(item) {
-    const { default_variant: variant } = item
+  function chooseSize(item, variantId) {
+    setChosenSizes((sizes) => ({ ...sizes, [item.position]: variantId }))
+    setJustAdded(null)
+    setMessage('')
+  }
+
+  function addOne(item, variant) {
     const added = add(variant.id, 1, variant.stock)
     setJustAdded(added > 0 ? item.product.id : null)
     setMessage(added > 0 ? '' : `${editItemTitle(item.product, variant)} is already in your bag at the most you can buy.`)
@@ -65,9 +72,12 @@ function EditView({ edit, number, next }) {
     const added = []
     const skipped = []
     for (const item of edit.items) {
-      const { default_variant: variant } = item
-      const title = editItemTitle(item.product, variant)
-      if (variant.stock === 0) skipped.push({ title, reason: 'sold-out' })
+      const title = item.needs_size ? item.product.name : editItemTitle(item.product, item.default_variant)
+      const variant = item.needs_size
+        ? item.variants.find((v) => v.id === chosenSizes[item.position])
+        : item.default_variant
+      if (!item.available) skipped.push({ title, reason: 'sold-out' })
+      else if (!variant) skipped.push({ title, reason: 'needs-size' })
       else if (add(variant.id, 1, variant.stock) > 0) added.push(title)
       else skipped.push({ title, reason: 'maxed' })
     }
@@ -89,7 +99,14 @@ function EditView({ edit, number, next }) {
 
       <section className="edit-items">
         {edit.items.map((item) => (
-          <EditItem key={item.position} item={item} justAdded={justAdded === item.product.id} onAdd={addOne} />
+          <EditItem
+            key={item.position}
+            item={item}
+            chosenId={chosenSizes[item.position]}
+            onChoose={chooseSize}
+            justAdded={justAdded === item.product.id}
+            onAdd={addOne}
+          />
         ))}
       </section>
 

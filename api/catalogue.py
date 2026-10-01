@@ -1,4 +1,5 @@
 """Public catalogue routes: brands, categories, products and edits."""
+import re
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Response
@@ -18,6 +19,9 @@ router = APIRouter(prefix="/api")
 CACHE_CONTROL = "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
 
 SortOption = Literal["featured", "newest", "price_asc", "price_desc"]
+
+# Clothing and shoe sizes. Colours, volumes and "One size" are not sizes the shopper must pick.
+SIZE_LABEL = re.compile(r"^(XXS|XS|S|M|L|XL|XXL|\d+)$")
 
 
 def cached(response: Response) -> None:
@@ -95,6 +99,10 @@ def active_products(session: Session, brand_slug: str | None = None, category_sl
     if featured is not None:
         query = query.where(Product.is_featured == featured)
     return list(session.exec(query.order_by(Product.id)).all())
+
+
+def needs_size(variants: list[Variant]) -> bool:
+    return len(variants) > 1 and all(SIZE_LABEL.match(v.label) for v in variants)
 
 
 def edit_tags_for_product(session: Session, product_id: int) -> list[EditTag]:
@@ -190,13 +198,19 @@ def get_edit(slug: str, response: Response, session: Session = Depends(get_sessi
     rows = session.exec(select(EditItem).where(EditItem.edit_id == edit.id).order_by(EditItem.position)).all()
     products = session.exec(select(Product).where(Product.id.in_([r.product_id for r in rows]))).all()
     cards = {c.id: c for c in build_cards(session, list(products))}
+    variants_by_product = active_variants(session, [p.id for p in products])
     items = []
     for row in rows:
         variant = session.get(Variant, row.variant_id)
         if row.product_id in cards and variant is not None and variant.is_active:
-            items.append(EditItemOut(position=row.position, note=row.note,
-                                     product=cards[row.product_id], default_variant=variant_out(variant)))
-    in_stock = [i for i in items if i.default_variant.stock > 0]
+            variants = variants_by_product[row.product_id]
+            sized = needs_size(variants)
+            available = any(v.stock > 0 for v in variants) if sized else variant.stock > 0
+            items.append(EditItemOut(
+                position=row.position, note=row.note, product=cards[row.product_id],
+                default_variant=variant_out(variant), variants=[variant_out(v) for v in variants],
+                needs_size=sized, available=available))
+    in_stock = [i for i in items if i.available]
     return EditDetail(**edit_summary(session, edit).model_dump(), items=items,
                       available_count=len(in_stock),
                       total_kobo=sum(i.default_variant.price_kobo for i in in_stock))

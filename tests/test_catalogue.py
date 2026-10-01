@@ -214,6 +214,56 @@ def test_edit_total_skips_items_whose_default_variant_is_sold_out(client, seeded
     assert len(body["items"]) == 5
 
 
+def test_edit_items_flag_which_products_need_a_size(client, seeded):
+    items = client.get("/api/edits/owambe").json()["items"]
+
+    needs_size = {i["product"]["slug"]: i["needs_size"] for i in items}
+    assert needs_size == {
+        "single-strand-coral-choker": False,  # One size
+        "olokun-wrap-dress": True,  # XS to XL
+        "aso-oke-gele": False,  # colours
+        "kano-leather-clutch": False,  # colours
+        "whipped-shea-butter": False,  # volumes
+    }
+
+
+def test_edit_item_lists_every_size_including_sold_out_ones(client, seeded):
+    jacket_size = seeded.exec(select(Variant).where(Variant.sku == "OLOKUN-WRAP-DRESS-L")).one()
+    jacket_size.stock = 0
+    seeded.add(jacket_size)
+    seeded.commit()
+
+    dress = client.get("/api/edits/owambe").json()["items"][1]
+
+    assert [v["label"] for v in dress["variants"]] == ["XS", "S", "M", "L", "XL"]
+    assert next(v for v in dress["variants"] if v["label"] == "L")["stock"] == 0
+
+
+def test_sized_item_stays_available_when_its_default_size_is_sold_out(client, seeded):
+    xs = seeded.exec(select(Variant).where(Variant.sku == "OLOKUN-WRAP-DRESS-XS")).one()
+    xs.stock = 0
+    seeded.add(xs)
+    seeded.commit()
+
+    body = client.get("/api/edits/owambe").json()
+
+    assert body["items"][1]["available"] is True
+    assert body["available_count"] == 5
+
+
+def test_sized_item_is_unavailable_when_every_size_is_sold_out(client, seeded):
+    for variant in seeded.exec(select(Variant).where(Variant.sku.like("OLOKUN-WRAP-DRESS-%"))).all():
+        variant.stock = 0
+        seeded.add(variant)
+    seeded.commit()
+
+    body = client.get("/api/edits/owambe").json()
+
+    assert body["items"][1]["available"] is False
+    assert body["available_count"] == 4
+    assert body["total_kobo"] == 26_400_000 - 9_500_000
+
+
 def test_edit_detail_404_for_unknown_slug(client, seeded):
     assert client.get("/api/edits/nope").status_code == 404
 

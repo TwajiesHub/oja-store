@@ -179,6 +179,20 @@
   color: var(--ink);
 }
 
+.variant-picker--compact {
+  width: 100%;
+}
+
+.variant-picker--compact .variant-picker__options {
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  max-width: 400px;
+}
+
+.variant-picker--compact .variant-picker__option {
+  min-height: 44px;
+  padding: 4px 6px;
+}
+
 .edit-item__actions {
   display: flex;
   align-items: center;

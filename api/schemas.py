@@ -96,6 +96,11 @@ class EditItemOut(BaseModel):
     note: str
     product: ProductCard
     default_variant: VariantOut
+    variants: list[VariantOut]
+    # True for clothing sizes: the shopper must pick one, so "Add all" never guesses.
+    needs_size: bool
+    # A sized item is available while any size is in stock; others depend on the default variant.
+    available: bool
 
 
 class EditDetail(EditSummary):
