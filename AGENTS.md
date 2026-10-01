@@ -116,7 +116,7 @@ Seeding Supabase (only when I ask): put the **session pooler** string (port 5432
 | M4 | `auth` | Google sign-in via Supabase, token verification on the backend, profiles, the server-side bag and merging the guest bag on sign-in. | Thu evening |
 | M5 | `checkout` | Checkout page, order creation, Paystack initialise, callback page states, webhook and verify, stock. | Fri morning |
 | M6 | `email` | Mailgun confirmation email after payment; "Your orders" pages. | Fri midday |
-| M7 | `polish` | Privacy and terms pages, 404, empty and error states, mobile pass, README, brand hero illustrations for Elú, Ivie and Kade. | Fri afternoon |
+| M7 | `polish` | Privacy and terms pages, 404, empty and error states, mobile pass, README, brand hero illustrations for Elú, Ivie and Kade, full keyboard-only pass across all pages. | Fri afternoon |
 
 Merge each milestone before starting the next. If time runs short, cut from the
 bottom of M7, never from payments (M5) or email (M6).
