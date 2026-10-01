@@ -1,11 +1,12 @@
-// The guest bag: a list of { variant_id, quantity, seen_price_kobo } kept in this browser
-// (localStorage). The price is only what the shopper last saw, so the bag page can say when
-// it changed. It is never used to charge anyone: the server prices every request.
-// Signing in and syncing the bag to the database comes with the sign-in milestone.
+// The bag kept in this browser (localStorage): a list of { variant_id, quantity, seen_price_kobo }.
+// Signed out it is the whole bag. Signed in it mirrors the saved bag, which bagSync.js keeps
+// up to date. The price is only what the shopper last saw, so the bag page can say when it
+// changed. It is never used to charge anyone: the server prices every request.
 const STORAGE_KEY = 'oja.bag'
 const MAX_QUANTITY = 10
 
 const listeners = new Set()
+const localChangeListeners = new Set()
 
 function isValidEntry(entry) {
   return (
@@ -27,7 +28,8 @@ function readStorage() {
 
 let items = readStorage()
 
-function publish(next) {
+// `byShopper` is false when the server, not the shopper, changed the bag (so it is not sent back).
+function publish(next, byShopper = true) {
   items = next
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
@@ -35,6 +37,7 @@ function publish(next) {
     // Private windows can refuse storage; the bag then lasts for this page view only.
   }
   listeners.forEach((listener) => listener())
+  if (byShopper) localChangeListeners.forEach((listener) => listener())
 }
 
 // Keep several open tabs in step.
@@ -48,6 +51,12 @@ window.addEventListener('storage', (event) => {
 export function subscribe(listener) {
   listeners.add(listener)
   return () => listeners.delete(listener)
+}
+
+// Called only when the shopper changes the bag (add, quantity, remove).
+export function onShopperChange(listener) {
+  localChangeListeners.add(listener)
+  return () => localChangeListeners.delete(listener)
 }
 
 export function getItems() {
@@ -84,4 +93,13 @@ export function removeFromBag(variantIds) {
 // The shopper has seen the current price (or this item never had one recorded).
 export function acknowledgePrice(variantId, priceKobo) {
   updateEntry(variantId, { seen_price_kobo: priceKobo })
+}
+
+// For bagSync only: swap in the saved bag from the server, or empty the bag on sign-out.
+export function replaceItems(next) {
+  publish(next, false)
+}
+
+export function clearBag() {
+  publish([], false)
 }

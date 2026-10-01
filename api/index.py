@@ -6,11 +6,13 @@ from sqlmodel import Session, func, select, text
 from api.bag import router as bag_router
 from api.catalogue import router as catalogue_router
 from api.db import get_session
+from api.me import router as me_router
 from api.models import Brand
 
 app = FastAPI(title="Ọjà API")
 app.include_router(catalogue_router)
 app.include_router(bag_router)
+app.include_router(me_router)
 
 
 @app.get("/api/health")
