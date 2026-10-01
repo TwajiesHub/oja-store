@@ -50,6 +50,13 @@ recipient in the Mailgun dashboard. If you place a test order with another addre
 is still saved and paid, it shows under **Your orders**, and the payment screen says the receipt
 could not be sent yet. A verified sending domain removes this limit.
 
+**Sandbox receipts often land in spam, sometimes with an "unauthenticated" warning.** One of our
+own test receipts did. The sandbox sends from a shared Mailgun address that is not set up for the
+shop's own domain, so mail providers cannot confirm who the email is really from. Check the spam
+folder if a receipt does not appear. For production, a **verified domain** (adding the SPF and DKIM
+records Mailgun provides to the shop's own domain) fixes this, and so the warning and the
+authorized-recipient limit go away together.
+
 A real confirmation email, sent through Mailgun:
 
 ![The Ọjà order confirmation email](docs/images/confirmation-email.png)

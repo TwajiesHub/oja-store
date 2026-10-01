@@ -207,6 +207,17 @@ def test_the_email_links_to_the_order_and_names_the_help_address(paid_content):
     assert "Returns are accepted within 7 days of delivery on unused items." in paid_content["text"]
 
 
+def test_price_figures_are_not_monospace_and_have_no_letter_spacing(paid_content):
+    import re
+
+    cells = re.findall(r'<td align="right"[^>]*style="([^"]*)"[^>]*>\s*(₦[\d,]+|Free)\s*</td>', paid_content["html"])
+
+    assert len(cells) >= 5  # two item prices, subtotal, delivery and total
+    for style, figure in cells:
+        assert "monospace" not in style and "Consolas" not in style, figure
+        assert "letter-spacing:0" in style.replace(" ", ""), figure
+
+
 def test_the_email_does_not_promise_a_text_message(paid_content):
     assert "text you" not in paid_content["html"].lower()
     assert "text you" not in paid_content["text"].lower()
