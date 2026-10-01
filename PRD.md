@@ -146,7 +146,7 @@ Clothing (`clothing`), Beauty (`beauty`), Jewellery (`jewellery`), Leather & hom
 | Danfo | Night Bus Windbreaker (S, M, L, XL, XXL) | Clothing | ₦55,000 |
 | Danfo | Molue Cap (One size) | Clothing | ₦12,000 |
 | Danfo | Okada Cargo Pants (28, 30, 32, 34, 36, 38) | Clothing | ₦38,000 |
-| Danfo | Route Tote (One size) | Leather & home | ₦15,000 |
+| Danfo | Route Tote (One size) | Clothing | ₦15,000 |
 | Danfo | Bus Stop Socks, 3 pairs (One size) | Clothing | ₦8,000 |
 | Elú | Olokun Wrap Dress (XS, S, M, L, XL) | Clothing | ₦95,000 |
 | Elú | Eleko Shirt (S, M, L, XL) | Clothing | ₦48,000 |

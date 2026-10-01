@@ -90,7 +90,7 @@ PRODUCTS = [
      "and moving fast.",
      "Cotton twill. Relaxed fit. Waist sizes 28 to 38.",
      [(str(s), 38000) for s in range(28, 40, 2)], False),
-    ("danfo", "Route Tote", "leather-home",
+    ("danfo", "Route Tote", "clothing",
      "A canvas tote printed with a bus route map, with straps long enough for the shoulder. "
      "Fits a laptop and lunch.",
      "Heavy canvas, one inside pocket.",

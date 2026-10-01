@@ -111,7 +111,7 @@
 @media (min-width: 1200px) {
   .hero {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
     grid-template-rows: auto 1fr auto;
     column-gap: 48px;
     row-gap: 24px;
@@ -119,8 +119,12 @@
     padding: 56px var(--page-gutter) 64px;
   }
 
+  /* 108px at 1440px wide. The width axis is eased to 100% and the text column widened so
+     "made-in-Nigeria," fits without running under the cover story. The 0.0855 factor is
+     that word's width per pixel of column (viewport minus gutters, column gap and a scrollbar). */
   .hero__headline {
-    font-size: clamp(60px, 6vw, 124px);
+    font-size: min(108px, calc((100vw - 175px) * 0.0855));
+    font-stretch: 100%;
     align-self: center;
   }
 

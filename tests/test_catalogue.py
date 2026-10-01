@@ -72,10 +72,12 @@ def test_products_returns_every_active_product(client, seeded):
 
 def test_products_filter_by_category_and_brand(client, seeded):
     clothing = client.get("/api/products?category=clothing").json()
+    danfo_clothing = client.get("/api/products?category=clothing&brand=danfo").json()
     danfo_leather = client.get("/api/products?category=leather-home&brand=danfo").json()
 
     assert clothing and all(p["category"]["slug"] == "clothing" for p in clothing)
-    assert [p["slug"] for p in danfo_leather] == ["route-tote"]
+    assert len(danfo_clothing) == 8 and "route-tote" in [p["slug"] for p in danfo_clothing]
+    assert danfo_leather == []
 
 
 def test_products_unknown_filter_returns_empty_list(client, seeded):
