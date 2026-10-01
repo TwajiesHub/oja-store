@@ -21,6 +21,18 @@ MAILGUN_API_BASE = os.environ.get("MAILGUN_API_BASE", "https://api.mailgun.net")
 MAILGUN_FROM = os.environ.get("MAILGUN_FROM", "")
 
 APP_URL = os.environ.get("APP_URL", "")
+# Vercel gives every preview its own address, without the https://.
+VERCEL_URL = os.environ.get("VERCEL_URL", "")
+LOCAL_APP_URL = "http://localhost:5173"
+
+
+def app_base_url() -> str:
+    """Where Paystack sends the shopper back to: production, a preview, or the local dev server."""
+    if APP_URL:
+        return APP_URL.rstrip("/")
+    if VERCEL_URL:
+        return f"https://{VERCEL_URL}"
+    return LOCAL_APP_URL
 
 # Vercel sets VERCEL=1 for every deployment.
 ON_VERCEL = bool(os.environ.get("VERCEL"))

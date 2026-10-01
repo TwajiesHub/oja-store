@@ -55,6 +55,8 @@ Tests: pytest ──▶ temporary SQLite, Paystack and Mailgun mocked
 │   ├── fulfilment.py     mark_paid(): the single idempotent payment handler
 │   ├── mail.py           Mailgun client, email rendering
 │   ├── orders.py         the user's orders
+│   ├── me.py             the profile
+│   ├── nigeria.py        states and phone validation
 │   └── emails/
 │       ├── order_confirmation.html   inline-styled, table layout
 │       └── order_confirmation.txt
@@ -162,10 +164,12 @@ Base path `/api`. JSON in snake_case. Money in kobo. Errors use FastAPI's
 | `GET /api/bag` | | the saved bag as the priced quote (same shape as `POST /api/bag/quote`); items no longer sold are reported once and removed |
 | `PUT /api/bag` | `{items: [{variant_id, quantity}]}` | replaces the whole bag and returns the priced quote. Quantities are clamped to stock and 10; a sold-out item keeps 1 so it still shows, flagged; unknown variants are dropped |
 | `POST /api/bag/merge` | `{items: [{variant_id, quantity}]}` | adds a guest bag into the saved one when someone signs in (quantities add up, capped at stock and 10) and returns the quote. Done on the server so two tabs signing in cannot double-count |
-| `POST /api/checkout` | delivery fields + `delivery_speed` | `{order_number, authorization_url, reference}`; 409 if the bag is empty or anything is out of stock |
+| `POST /api/checkout/quote` | `{state, delivery_speed}` | the saved bag with delivery and total from the server rules, plus `delivery_options` (each speed with its fee, or unavailable: express outside Lagos). 422 for an unknown state or an unavailable speed. The checkout page shows these numbers instead of copying the fee rules |
+| `POST /api/checkout` | delivery fields + `delivery_speed` + `save_address` | `{order_number, authorization_url, reference}`; 409 if the bag is empty or anything is out of stock; 422 for bad details; 502 if Paystack cannot be reached (the order stays pending) |
 | `POST /api/orders/{number}/pay` | | new attempt for an unpaid order: `{authorization_url, reference}` |
 | `POST /api/payments/verify` | `{reference}` | `{status: "paid" | "pending" | "failed", order_number}` |
-| `GET /api/orders` · `GET /api/orders/{number}` | | the user's orders (403 for someone else's) |
+| `GET /api/orders/{number}` | | the order with items, totals, delivery details and, once paid, `arriving_from` and `arriving_to` (404 unknown, 403 someone else's) |
+| `GET /api/orders` | | the user's paid orders, newest first (M6) |
 
 ### Paystack
 | `POST /api/paystack/webhook` | raw body, header `x-paystack-signature` | 200 on valid signature (even if ignored); 401 on bad signature |
@@ -190,7 +194,9 @@ token and tell me.
 2. Initialise Paystack: `POST https://api.paystack.co/transaction/initialize` with
    the user's email, `amount` = total kobo, `currency` = `NGN`, `reference` =
    `{number}-{attempt}`, `callback_url` = `{base}/checkout/complete`, and
-   metadata `{order_number, user_id}`. Return `authorization_url`.
+   metadata `{order_number, user_id, cancel_action}`, where `cancel_action` is
+   `{base}/checkout/complete?reference=…`, so closing Paystack's page also ends on the
+   payment screen. Return `authorization_url`.
 3. The browser goes to Paystack. Afterwards Paystack redirects to
    `/checkout/complete?reference=…`.
 4. `CheckoutComplete` shows **confirming** and calls `POST /api/payments/verify`
@@ -198,10 +204,15 @@ token and tell me.
    (`GET /transaction/verify/{reference}`) and, on success, calls `mark_paid`.
 5. Separately, Paystack sends `charge.success` to the webhook, which also calls `mark_paid`.
 6. The page shows **paid** or **failed** from the response. After 30 s it keeps
-   the confirming screen with "Check again", as in the mockup.
+   the confirming screen with "Check again" and tells the shopper to email the
+   shop's contact address with the order number if they were charged.
+7. "Try payment again" calls `POST /api/orders/{number}/pay`: a new attempt
+   (`{number}-2`, ...) for the same order.
 
 ### `mark_paid(reference, amount, currency)`, the only way an order becomes paid
-1. Find the order by `paystack_reference`. Unknown reference: log it and return
+1. Find the order from the reference: `{number}-{attempt}`, with the attempt between 1 and
+   the order's `payment_attempts`. Any past attempt counts, because a payment started on
+   attempt 1 can finish after attempt 2 has begun. Unknown reference: log it and return
    (webhooks from previews or local tests reach production too).
 2. Reject and log if `amount != total_kobo` or `currency != "NGN"`.
 3. Claim it atomically: `UPDATE orders SET status='paid', paid_at=now WHERE id=:id AND status='pending_payment'`.

@@ -1,10 +1,14 @@
 // The one place the browser talks to our backend.
 import { getAccessToken, getLatestAccessToken, refreshAccessToken, signOutOfSupabase } from './supabase.js'
 
+// `detail` is the server's message for the shopper (a 409 or 502). `fieldErrors` maps a form
+// field to its message when the server rejected a value (a 422).
 export class ApiError extends Error {
-  constructor(status, message) {
+  constructor(status, message, { detail = null, fieldErrors = {} } = {}) {
     super(message)
     this.status = status
+    this.detail = detail
+    this.fieldErrors = fieldErrors
   }
 }
 
@@ -17,6 +21,23 @@ function send(method, path, body, token) {
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),
   })
+}
+
+async function readProblem(response) {
+  const problem = { detail: null, fieldErrors: {} }
+  try {
+    const body = await response.json()
+    if (typeof body.detail === 'string') problem.detail = body.detail
+    if (Array.isArray(body.detail)) {
+      for (const item of body.detail) {
+        const field = item.loc?.[item.loc.length - 1]
+        if (typeof field === 'string') problem.fieldErrors[field] = String(item.msg).replace(/^Value error, /, '')
+      }
+    }
+  } catch {
+    // No readable body: the status alone will do.
+  }
+  return problem
 }
 
 // With `auth: true` the signed-in user's token is attached. If the server says it is no good,
@@ -36,7 +57,7 @@ async function request(method, path, body, { auth = false } = {}) {
   }
 
   if (!response.ok) {
-    throw new ApiError(response.status, `${method} ${path} failed with ${response.status}`)
+    throw new ApiError(response.status, `${method} ${path} failed with ${response.status}`, await readProblem(response))
   }
   return response.json()
 }

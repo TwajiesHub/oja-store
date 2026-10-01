@@ -1,5 +1,5 @@
 """Request and response models. Money is always an integer number of kobo."""
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
@@ -192,3 +192,96 @@ class ProfileIn(BaseModel):
         if state is None:
             raise ValueError("Choose a Nigerian state")
         return state
+
+
+DeliverySpeed = Literal["standard", "express"]
+
+
+class CheckoutQuoteIn(BaseModel):
+    state: str
+    delivery_speed: DeliverySpeed
+
+    @field_validator("state", mode="before")
+    @classmethod
+    def trim_state(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+    @field_validator("state")
+    @classmethod
+    def valid_state(cls, value: str) -> str:
+        state = canonical_state(value)
+        if state is None:
+            raise ValueError("Choose a Nigerian state")
+        return state
+
+
+class DeliveryOption(BaseModel):
+    speed: DeliverySpeed
+    # None when this speed is not offered for the chosen state.
+    fee_kobo: int | None
+    available: bool
+
+
+class CheckoutQuote(BaseModel):
+    bag: BagQuote
+    delivery_speed: DeliverySpeed
+    delivery_kobo: int
+    total_kobo: int
+    delivery_options: list[DeliveryOption]
+
+
+class CheckoutIn(ProfileIn):
+    """Delivery details are the profile's, plus how fast and whether to remember the address."""
+
+    delivery_speed: DeliverySpeed
+    save_address: bool = True
+
+
+class CheckoutOut(BaseModel):
+    order_number: str
+    authorization_url: str
+    reference: str
+
+
+class PayOut(BaseModel):
+    authorization_url: str
+    reference: str
+
+
+class VerifyIn(BaseModel):
+    reference: str = Field(min_length=1, max_length=64)
+
+
+class VerifyOut(BaseModel):
+    status: Literal["paid", "pending", "failed"]
+    order_number: str
+
+
+class OrderItemOut(BaseModel):
+    brand_name: str
+    product_name: str
+    variant_label: str
+    unit_price_kobo: int
+    quantity: int
+    line_total_kobo: int
+
+
+class OrderOut(BaseModel):
+    number: str
+    status: str
+    email: str
+    created_at: datetime
+    paid_at: datetime | None
+    delivery_speed: str
+    subtotal_kobo: int
+    delivery_kobo: int
+    total_kobo: int
+    full_name: str
+    phone: str
+    address: str
+    area: str
+    state: str
+    # Only once the order is paid.
+    arriving_from: date | None
+    arriving_to: date | None
+    items: list[OrderItemOut]

@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 
 import AnnouncementBar from './AnnouncementBar.jsx'
-import BagSync from './BagSync.jsx'
 import Footer from './Footer.jsx'
 import Nav from './Nav.jsx'
 
@@ -18,7 +17,6 @@ export default function Layout() {
 
   return (
     <>
-      <BagSync />
       <a href="#main" className="skip-link">Skip to content</a>
       <AnnouncementBar />
       <Nav />
