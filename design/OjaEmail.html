@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Order confirmation email</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E9E5DC}
+a{color:inherit}
+.mono{font-family:'JetBrains Mono',Consolas,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase}
+.r{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #D9D3C7;font-size:15px}
+.b{font-family:'JetBrains Mono',Consolas,monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#6A645B;padding-top:14px}
+</style>
+</helmet>
+<div style="width: 600px; height: 1300px; display: flex; flex-direction: column; background: #FBFAF6; color: #121110; font-family: Archivo, Helvetica, Arial, sans-serif; overflow: hidden">
+<div style="height: 96px; flex-shrink: 0; background: #121110; color: #F4F1EA; display: flex; align-items: center; justify-content: space-between; padding: 0 40px">
+<span style="font-weight: 900; font-stretch: 125%; font-size: 34px; letter-spacing: -0.03em">Ọjà</span>
+<span class="mono">Order confirmed</span>
+</div>
+<div style="padding: 40px 40px 0; display: flex; flex-direction: column; gap: 16px">
+<span class="mono" style="color: #6A645B">Order OJA-10482 · Fri 2 Oct 2026</span>
+<h1 style="margin: 0; font-size: 34px; font-weight: 800; font-stretch: 112%; letter-spacing: -0.03em; line-height: 1.05">Thank you, Amina. Your order is confirmed.</h1>
+<p style="margin: 0; font-size: 16px; line-height: 1.6; color: #3B3833">We've received your payment of <strong>₦116,000</strong>. Your pieces are being packed by three Nigerian brands, and we'll deliver them together.</p>
+<a href="#order" style="align-self: flex-start; background: #121110; color: #F4F1EA; padding: 16px 24px; text-decoration: none; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 12px; letter-spacing: 0.1em">VIEW YOUR ORDER</a>
+</div>
+<div style="padding: 32px 40px 0; display: flex; flex-direction: column">
+<span style="font-size: 18px; font-weight: 700; padding-bottom: 6px; border-bottom: 2px solid #121110">What you ordered</span>
+<span class="b">Danfo</span>
+<div class="r"><span>Oshodi Hoodie · Tar black, M · × 1</span><span style="font-family: 'JetBrains Mono', Consolas, monospace">₦42,000</span></div>
+<span class="b">Kade</span>
+<div class="r"><span>Whipped Shea Butter · 250 ml · × 2</span><span style="font-family: 'JetBrains Mono', Consolas, monospace">₦36,000</span></div>
+<span class="b">Ivie</span>
+<div class="r"><span>Coral drop earrings · 10 mm, polished · × 1</span><span style="font-family: 'JetBrains Mono', Consolas, monospace">₦38,000</span></div>
+<div class="r" style="border: none; padding-top: 16px"><span>Subtotal</span><span style="font-family: 'JetBrains Mono', Consolas, monospace">₦116,000</span></div>
+<div class="r" style="border: none; padding-top: 0"><span>Delivery · Standard</span><span style="font-family: 'JetBrains Mono', Consolas, monospace">Free</span></div>
+<div class="r" style="border-top: 1px solid #121110; border-bottom: none; font-weight: 700; font-size: 17px"><span>Total paid (Paystack)</span><span style="font-family: 'JetBrains Mono', Consolas, monospace">₦116,000</span></div>
+</div>
+<div style="margin: 24px 40px 0; background: #EFEBE2; padding: 20px 22px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; font-size: 14px; line-height: 1.55">
+<div><span class="mono" style="color: #6A645B">Delivering to</span><br>Amina Bello<br>12 Herbert Macaulay Way<br>Yaba, Lagos<br>+234 803 000 0000</div>
+<div><span class="mono" style="color: #6A645B">Expected</span><br><strong>Mon 5 – Wed 7 Oct</strong><br>We'll text you on the day of delivery.</div>
+</div>
+<div style="padding: 28px 40px 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 1.6; color: #3B3833">
+<span style="font-size: 16px; font-weight: 700; color: #121110">Need help?</span>
+<span>Write to [YOUR SUPPORT EMAIL] with your order number. Returns are accepted within 7 days of delivery on unused items.</span>
+</div>
+<div style="margin-top: auto; background: #121110; color: #9C968C; padding: 28px 40px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 12px; line-height: 1.6">
+<span>Ọjà · A market for made-in-Nigeria · Lagos<br>You're receiving this because you placed an order.</span>
+<span style="font-weight: 900; font-stretch: 125%; font-size: 40px; color: #F4F1EA; letter-spacing: -0.03em; line-height: 0.8">Ọjà</span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":600,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

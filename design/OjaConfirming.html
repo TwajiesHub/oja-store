@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Confirming payment, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Playfair+Display:ital,wght@1,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F1EA}
+a{color:inherit;text-decoration:none}
+.wm{font-family:Archivo,sans-serif;font-weight:900;font-stretch:125%;letter-spacing:-0.03em;line-height:1}
+.disp{font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;letter-spacing:-0.04em;line-height:0.98;margin:0}
+.it{font-family:'Playfair Display',serif;font-style:italic;font-weight:400}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F4F1EA; color: #121110; font-family: Archivo, 'Helvetica Neue', sans-serif; overflow: hidden">
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #CFC8BB"><span class="wm" style="font-size: 28px">Ọjà</span></div>
+<div style="flex-grow: 1; padding: 28px 18px 20px; display: flex; flex-direction: column; gap: 18px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Waiting for confirmation"><circle cx="28" cy="28" r="24" fill="none" stroke="#CFC8BB" stroke-width="5"></circle><path d="M28 4 A24 24 0 0 1 52 28" fill="none" stroke="#121110" stroke-width="5" stroke-linecap="round"></path></svg>
+<span class="mono" style="color: #6A645B">Order OJA-10482 · Awaiting payment</span>
+<h1 class="disp" style="font-size: 38px">Confirming your <span class="it" style="font-weight: 400">payment…</span></h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3B3833">We're waiting for Paystack to confirm. This usually takes a few seconds, and this page updates by itself.</p>
+<div style="background: #E4DED2; padding: 16px; font-size: 14px; line-height: 1.55; color: #3B3833">If it takes longer, it's safe to close this page. Your order is saved, and your receipt email arrives as soon as the payment is confirmed.</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+<button class="mono" style="height: 54px; border: 1px solid #121110; background: transparent; font-size: 12px; cursor: pointer; color: #121110">Check again</button>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

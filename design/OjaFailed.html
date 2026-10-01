@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payment failed, phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;family=Playfair+Display:ital,wght@1,400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F1EA}
+a{color:inherit;text-decoration:none}
+.wm{font-family:Archivo,sans-serif;font-weight:900;font-stretch:125%;letter-spacing:-0.03em;line-height:1}
+.disp{font-family:Archivo,sans-serif;font-weight:800;font-stretch:112%;letter-spacing:-0.04em;line-height:0.98;margin:0}
+.it{font-family:'Playfair Display',serif;font-style:italic;font-weight:400}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; display: flex; flex-direction: column; background: #F4F1EA; color: #121110; font-family: Archivo, 'Helvetica Neue', sans-serif; overflow: hidden">
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #CFC8BB"><a href="OjaHomePhone.dc.html" class="wm" style="font-size: 28px">Ọjà</a></div>
+<div style="flex-grow: 1; padding: 28px 18px 20px; display: flex; flex-direction: column; gap: 18px">
+<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Payment not completed"><circle cx="28" cy="28" r="27" fill="#9E2B2B"></circle><path d="M20 20 L36 36 M36 20 L20 36" stroke="#F8ECE8" stroke-width="4" stroke-linecap="round"></path></svg>
+<span class="mono" style="color: #6A645B">Order OJA-10482 · Not paid</span>
+<h1 class="disp" style="font-size: 38px">Payment didn't <span class="it" style="font-weight: 400">go through.</span></h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.55; color: #3B3833">No money was taken. Your bag is saved, so you can try again, or pick a different method on Paystack, such as bank transfer or USSD.</p>
+<div style="background: #E4DED2; padding: 16px; font-size: 14px; line-height: 1.55; color: #3B3833">Cards from some Nigerian banks need online payments switched on in the bank's app first.</div>
+<div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+<a href="OjaCheckout.dc.html" class="mono" style="height: 54px; background: #121110; color: #F4F1EA; display: flex; align-items: center; justify-content: center; font-size: 12px">Try payment again</a>
+<a href="OjaCheckout.dc.html" class="mono" style="height: 54px; border: 1px solid #121110; display: flex; align-items: center; justify-content: center; font-size: 12px">Back to your bag</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
