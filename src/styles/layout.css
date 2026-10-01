@@ -254,10 +254,12 @@
   align-items: flex-end;
 }
 
+/* Room below the baseline for the tail of the j and the dot under the Ọ, so nothing is cut off
+   by the footer's overflow. The padding scales with the type. */
 .site-footer__wordmark {
   font-size: 38vw;
-  line-height: 0.74;
-  margin-bottom: -0.03em;
+  line-height: 0.9;
+  padding-bottom: 0.24em;
 }
 
 .site-footer__note {
@@ -280,7 +282,6 @@
 
   .site-footer__wordmark {
     font-size: min(26.4vw, 380px);
-    margin-bottom: -0.03em;
   }
 
   .site-footer__note {
