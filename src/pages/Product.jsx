@@ -9,6 +9,7 @@ import ProductCard from '../components/ProductCard.jsx'
 import QuantityStepper from '../components/QuantityStepper.jsx'
 import VariantPicker from '../components/VariantPicker.jsx'
 import useApi from '../hooks/useApi.js'
+import useBag from '../hooks/useBag.js'
 import usePageTitle from '../hooks/usePageTitle.js'
 import { kitStyle } from '../lib/brandKit.js'
 import { formatNaira } from '../lib/money.js'
@@ -29,6 +30,8 @@ function ProductInfo({ product }) {
   const [variantId, setVariantId] = useState(firstInStock.id)
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
+  const [note, setNote] = useState('')
+  const { add } = useBag()
 
   const variant = product.variants.find((v) => v.id === variantId)
   const maxQuantity = Math.min(variant.stock, MAX_QUANTITY)
@@ -45,14 +48,23 @@ function ProductInfo({ product }) {
     setVariantId(id)
     setQuantity((q) => Math.min(q, Math.max(Math.min(next.stock, MAX_QUANTITY), 1)))
     setAdded(false)
+    setNote('')
   }
 
   function changeQuantity(value) {
     setQuantity(Math.min(Math.max(value, 1), maxQuantity))
     setAdded(false)
+    setNote('')
   }
 
-  // The bag arrives in a later milestone; for now the button only confirms the choice.
+  function addToBag() {
+    const addedCount = add(variant.id, quantity, variant.stock)
+    setAdded(addedCount > 0)
+    if (addedCount === 0) setNote('Your bag already has the most you can buy of this.')
+    else if (addedCount < quantity) setNote(`Added ${addedCount}. That is the most you can buy of this.`)
+    else setNote('')
+  }
+
   const addLabel = soldOut
     ? 'SOLD OUT'
     : added
@@ -73,11 +85,12 @@ function ProductInfo({ product }) {
 
       <div className="product-info__buy">
         {!soldOut && <QuantityStepper value={quantity} max={maxQuantity} onChange={changeQuantity} />}
-        <button type="button" className="product-info__add" disabled={soldOut} onClick={() => setAdded(true)}>
+        <button type="button" className="product-info__add" disabled={soldOut} onClick={addToBag}>
           {addLabel}
         </button>
       </div>
       <p className="product-info__stock">{stockLine(variant)}</p>
+      <p className="product-info__note" role="status">{note}</p>
 
       <details className="accordion" open>
         <summary>Details</summary>

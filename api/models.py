@@ -104,6 +104,8 @@ class Edit(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     slug: str = Field(unique=True, index=True)
     title: str
+    # A short phrase shown beside the edit number, e.g. "For the party season".
+    kicker: str = ""
     intro: str
     accent: str
     accent_text: str

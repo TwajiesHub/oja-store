@@ -61,6 +61,7 @@ class EditSummary(BaseModel):
     id: int
     slug: str
     title: str
+    kicker: str
     intro: str
     accent: str
     accent_text: str
@@ -95,7 +96,15 @@ class EditItemOut(BaseModel):
     note: str
     product: ProductCard
     default_variant: VariantOut
+    variants: list[VariantOut]
+    # True for clothing sizes: the shopper must pick one, so "Add all" never guesses.
+    needs_size: bool
+    # A sized item is available while any size is in stock; others depend on the default variant.
+    available: bool
 
 
 class EditDetail(EditSummary):
     items: list[EditItemOut]
+    # Only items whose default variant is in stock count towards these.
+    available_count: int
+    total_kobo: int

@@ -26,7 +26,7 @@ def load_dotenv_for_local_use() -> None:
 
 
 # Columns added after M0. create_all never alters an existing table, so add them here.
-ADDED_COLUMNS = [("brands", "descriptor"), ("brands", "slogan")]
+ADDED_COLUMNS = [("brands", "descriptor"), ("brands", "slogan"), ("edits", "kicker")]
 
 
 def add_missing_columns(engine) -> None:
@@ -34,6 +34,8 @@ def add_missing_columns(engine) -> None:
     inspector = inspect(engine)
     with engine.begin() as connection:
         for table, column in ADDED_COLUMNS:
+            if not inspector.has_table(table):
+                continue
             existing = {c["name"] for c in inspector.get_columns(table)}
             if column not in existing:
                 connection.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} VARCHAR NOT NULL DEFAULT ''"))
@@ -93,9 +95,9 @@ def seed_products(session: Session, brands: dict, categories: dict) -> dict[tupl
 
 
 def seed_edits(session: Session, variants_by_product: dict) -> None:
-    for order, (slug, title, intro, accent, accent_text, items) in enumerate(EDITS):
+    for order, (slug, title, kicker, intro, accent, accent_text, items) in enumerate(EDITS):
         edit = upsert(session, Edit, {"slug": slug}, {
-            "title": title, "intro": intro, "accent": accent, "accent_text": accent_text,
+            "title": title, "kicker": kicker, "intro": intro, "accent": accent, "accent_text": accent_text,
             "sort_order": order,
         })
         for position, (brand_slug, product_name, variant_label, note) in enumerate(items, start=1):

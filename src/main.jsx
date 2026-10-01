@@ -11,6 +11,7 @@ import './styles/layout.css'
 import './styles/home.css'
 import './styles/brand.css'
 import './styles/product.css'
+import './styles/edit.css'
 
 // Wake the serverless function while the page loads, so the first real request is fast.
 apiGet('/health').catch(() => {})
