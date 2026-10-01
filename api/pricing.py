@@ -1,4 +1,5 @@
-"""Delivery fees, totals and order numbers. Every amount is an integer number of kobo."""
+"""Delivery fees, totals, order numbers and delivery dates. Every amount is an integer number of kobo."""
+from datetime import date, datetime, timedelta, timezone
 
 KOBO_PER_NAIRA = 100
 MAX_QUANTITY = 10
@@ -9,6 +10,12 @@ LAGOS_EXPRESS_FEE_KOBO = 500_000
 OTHER_STATES_STANDARD_FEE_KOBO = 450_000
 
 ORDER_NUMBER_OFFSET = 10_000
+
+# Delivery windows, in working days (Monday to Friday) counted from the day of payment.
+LAGOS_STANDARD_DAYS = (1, 3)
+OTHER_STATES_STANDARD_DAYS = (3, 5)
+EXPRESS_CUTOFF_HOUR = 12  # Express is same day when paid before 12:00 WAT on a working day
+WAT = timezone(timedelta(hours=1))
 
 STANDARD = "standard"
 EXPRESS = "express"
@@ -49,3 +56,26 @@ def free_delivery_remaining_kobo(subtotal_kobo: int) -> int:
 
 def order_number(order_id: int) -> str:
     return f"OJA-{ORDER_NUMBER_OFFSET + order_id}"
+
+
+def add_working_days(start: date, days: int) -> date:
+    """The date `days` working days after `start`. Public holidays are not counted out."""
+    current = start
+    counted = 0
+    while counted < days:
+        current += timedelta(days=1)
+        if current.weekday() < 5:
+            counted += 1
+    return current
+
+
+def expected_delivery(paid_at: datetime, state: str, speed: str) -> tuple[date, date]:
+    """The earliest and latest expected delivery dates for an order paid at `paid_at`."""
+    local = paid_at.astimezone(WAT)
+    day = local.date()
+    if speed == EXPRESS:
+        same_day = day.weekday() < 5 and local.hour < EXPRESS_CUTOFF_HOUR
+        arrival = day if same_day else add_working_days(day, 1)
+        return arrival, arrival
+    fastest, slowest = LAGOS_STANDARD_DAYS if is_lagos(state) else OTHER_STATES_STANDARD_DAYS
+    return add_working_days(day, fastest), add_working_days(day, slowest)

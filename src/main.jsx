@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import App from './App.jsx'
 import AuthProvider from './components/AuthProvider.jsx'
+import BagSync from './components/BagSync.jsx'
 import { apiGet } from './lib/api.js'
 import './styles/tokens.css'
 import './styles/base.css'
@@ -15,6 +16,7 @@ import './styles/product.css'
 import './styles/edit.css'
 import './styles/bag.css'
 import './styles/legal.css'
+import './styles/checkout.css'
 
 // Wake the serverless function while the page loads, so the first real request is fast.
 apiGet('/health').catch(() => {})
@@ -22,6 +24,8 @@ apiGet('/health').catch(() => {})
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
+      {/* Mounted once for the whole app, so moving between the shop and checkout never interrupts a save. */}
+      <BagSync />
       <BrowserRouter>
         <App />
       </BrowserRouter>
