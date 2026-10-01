@@ -1,5 +1,8 @@
 {
   "regions": ["lhr1"],
+  "functions": {
+    "api/index.py": { "includeFiles": "api/emails/**" }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/index.html" }

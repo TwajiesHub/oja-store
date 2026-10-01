@@ -104,6 +104,14 @@ def test_phone_numbers_in_common_spellings_are_normalised(number):
     assert nigeria.normalise_phone(number) == "+2348030000000"
 
 
+@pytest.mark.parametrize(
+    ("phone", "shown"),
+    [("+2348030000000", "+234 803 000 0000"), ("08030000000", "08030000000"), ("", "")],
+)
+def test_phone_is_shown_with_spaces(phone, shown):
+    assert nigeria.format_phone(phone) == shown
+
+
 def test_there_are_37_states_including_fct():
     assert len(nigeria.STATES) == 37
     assert nigeria.canonical_state("fct") == "FCT"

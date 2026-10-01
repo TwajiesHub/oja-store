@@ -1,0 +1,29 @@
+Ọjà · Order confirmed
+
+Order $number · $date
+
+$headline
+
+$intro_text
+
+View your order: $order_url
+
+WHAT YOU ORDERED
+$items_text
+
+Subtotal: $subtotal
+$delivery_label: $delivery_price
+Total paid (Paystack): $total
+
+DELIVERING TO
+$deliver_text
+
+EXPECTED
+$expected
+$delivery_note
+
+NEED HELP?
+$help_text
+
+Ọjà · A market for made-in-Nigeria · Lagos
+You're receiving this because you placed an order.

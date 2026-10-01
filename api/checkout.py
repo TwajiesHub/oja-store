@@ -9,6 +9,7 @@ from api.auth import AuthUser, current_user
 from api.bag import purchasable_variants, quote_items, saved_quantities
 from api.db import get_session
 from api.fulfilment import ALREADY_PAID, PAID, find_order, mark_paid
+from api.mail import send_order_confirmation
 from api.models import Order, OrderItem, Profile, Variant, utc_now
 from api.orders import get_owned_order
 from api.pricing import DELIVERY_SPEEDS, delivery_fee_kobo, order_number
@@ -165,6 +166,7 @@ def verify_payment(body: VerifyIn, user: AuthUser = Depends(current_user),
     if order.user_id != user.user_id:
         raise HTTPException(status_code=403, detail="That payment belongs to another account")
     if order.status == "paid":
+        send_order_confirmation(session, order.id)  # retries a receipt that failed earlier
         return VerifyOut(status="paid", order_number=order.number)
 
     try:

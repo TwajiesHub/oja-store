@@ -18,3 +18,10 @@ export function formatArrival(fromIso, toIso) {
   const start = sameMonth ? withWeekday(from) : `${weekday.format(from)} ${dayMonth.format(from)}`
   return `${start} – ${weekday.format(to)} ${dayMonth.format(to)}`
 }
+
+// A moment from the server ("2026-10-01T09:14:00Z") as the day it was in Lagos: "2 Oct 2026".
+const lagosDay = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Africa/Lagos' })
+
+export function formatPaidDay(isoMoment) {
+  return lagosDay.format(new Date(isoMoment))
+}

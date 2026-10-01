@@ -65,3 +65,74 @@ def test_order_detail_for_someone_elses_order_is_403(client, seeded, auth, pendi
     response = client.get("/api/orders/OJA-10001", headers=auth("user-b", "bola@example.com"))
 
     assert response.status_code == 403
+
+
+# The list of the user's orders
+
+def place_and_pay(client, seeded, auth, sku, quantity, user="user-a", email="amina@example.com"):
+    put_bag(client, auth, [(variant_id(seeded, sku), quantity)], user=user, email=email)
+    checkout(client, auth, user=user, email=email)
+    seeded.expire_all()
+    order = seeded.exec(select(Order).where(Order.user_id == user).order_by(Order.id.desc())).first()
+    post_webhook(client, webhook_body(order.paystack_reference, order.total_kobo))
+    return order
+
+
+def test_order_list_requires_sign_in(client, seeded):
+    assert client.get("/api/orders").status_code == 401
+
+
+def test_order_list_is_empty_for_a_new_user(client, seeded, auth):
+    response = client.get("/api/orders", headers=auth())
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_order_list_shows_paid_orders_newest_first(client, seeded, auth, fake_paystack):
+    first = place_and_pay(client, seeded, auth, "MOLUE-CAP-ONE-SIZE", 1)
+    second = place_and_pay(client, seeded, auth, "SHEA-LIP-BALM-15-G", 3)
+
+    orders = client.get("/api/orders", headers=auth()).json()
+
+    assert [o["number"] for o in orders] == [second.number, first.number]
+    assert orders[0]["status"] == "paid"
+    assert (orders[0]["item_count"], orders[0]["total_kobo"]) == (3, 3 * 350_000 + 250_000)
+    assert orders[0]["paid_at"] is not None
+
+
+def test_order_list_leaves_out_orders_that_were_never_paid(client, seeded, auth, fake_paystack, pending_order):
+    response = client.get("/api/orders", headers=auth())
+
+    assert response.json() == []
+
+
+def test_order_list_only_shows_your_own_orders(client, seeded, auth, fake_paystack):
+    mine = place_and_pay(client, seeded, auth, "MOLUE-CAP-ONE-SIZE", 1)
+    place_and_pay(client, seeded, auth, "SHEA-LIP-BALM-15-G", 1, user="user-b", email="bola@example.com")
+
+    orders = client.get("/api/orders", headers=auth()).json()
+
+    assert [o["number"] for o in orders] == [mine.number]
+
+
+# Whether a receipt really went out
+
+def test_the_order_says_when_the_receipt_was_sent(client, seeded, auth, fake_paystack, pending_order):
+    post_webhook(client, webhook_body(pending_order.paystack_reference, pending_order.total_kobo))
+
+    assert client.get("/api/orders/OJA-10001", headers=auth()).json()["receipt_sent"] is True
+
+
+def test_the_order_says_when_the_receipt_has_not_been_sent(client, seeded, auth, fake_paystack, pending_order, fake_mailgun):
+    fake_mailgun.fail_with = "Mailgun refused the email (HTTP 403): sandbox"
+    post_webhook(client, webhook_body(pending_order.paystack_reference, pending_order.total_kobo))
+
+    body = client.get("/api/orders/OJA-10001", headers=auth()).json()
+
+    assert body["status"] == "paid"
+    assert body["receipt_sent"] is False
+
+
+def test_an_unpaid_order_has_no_receipt(client, seeded, auth, pending_order):
+    assert client.get("/api/orders/OJA-10001", headers=auth()).json()["receipt_sent"] is False

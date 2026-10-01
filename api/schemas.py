@@ -266,6 +266,14 @@ class OrderItemOut(BaseModel):
     line_total_kobo: int
 
 
+class OrderSummaryOut(BaseModel):
+    number: str
+    status: str
+    paid_at: datetime | None
+    total_kobo: int
+    item_count: int
+
+
 class OrderOut(BaseModel):
     number: str
     status: str
@@ -281,6 +289,8 @@ class OrderOut(BaseModel):
     address: str
     area: str
     state: str
+    # True once the confirmation email has really been sent.
+    receipt_sent: bool
     # Only once the order is paid.
     arriving_from: date | None
     arriving_to: date | None
