@@ -50,3 +50,23 @@ export function DanfoBus() {
     </svg>
   )
 }
+
+// The wide version of the bead strand, stretched across an edit page hero.
+export function CoralStrand() {
+  return (
+    <svg className="edit-hero__graphic edit-hero__graphic--beads" viewBox="0 0 560 128" preserveAspectRatio="none" aria-hidden="true">
+      {BEADS.map(([cx, cy, r]) => <circle key={cx} cx={cx} cy={cy} r={r * 0.7} fill="#C8452F" />)}
+      {BRASS_BARS.map(([x, y]) => <rect key={x} x={x + 2} y={y + 3} width="7" height="14" rx="2" fill="#C9A24A" />)}
+    </svg>
+  )
+}
+
+export function SunHazeWide() {
+  return (
+    <svg className="edit-hero__graphic edit-hero__graphic--sun" viewBox="0 0 420 420" aria-hidden="true">
+      <circle cx="210" cy="210" r="200" fill="#EBC486" />
+      <circle cx="210" cy="210" r="150" fill="#F2D6A6" />
+      <circle cx="210" cy="210" r="100" fill="#F7E6C6" />
+    </svg>
+  )
+}

@@ -30,7 +30,7 @@ def test_brands_lists_six_with_kit_fields(client, seeded):
 def test_catalogue_responses_are_cached_at_the_edge(client, seeded):
     response = client.get("/api/brands")
 
-    assert response.headers["cache-control"] == "public, s-maxage=60, stale-while-revalidate=300"
+    assert response.headers["cache-control"] == "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
 
 
 def test_brands_hides_inactive_brand(client, seeded):
@@ -191,6 +191,27 @@ def test_edit_detail_has_ordered_items_with_default_variants(client, seeded):
     assert items[2]["product"]["slug"] == "aso-oke-gele"
     assert items[2]["default_variant"]["label"] == "Wine"
     assert items[0]["note"].startswith("The piece every aunty")
+
+
+def test_edit_detail_total_matches_default_variant_prices(client, seeded):
+    body = client.get("/api/edits/owambe").json()
+
+    assert body["kicker"] == "For the party season"
+    assert body["available_count"] == 5
+    assert body["total_kobo"] == 26_400_000
+
+
+def test_edit_total_skips_items_whose_default_variant_is_sold_out(client, seeded):
+    clutch = seeded.exec(select(Variant).where(Variant.sku == "KANO-LEATHER-CLUTCH-TAN")).one()
+    clutch.stock = 0
+    seeded.add(clutch)
+    seeded.commit()
+
+    body = client.get("/api/edits/owambe").json()
+
+    assert body["available_count"] == 4
+    assert body["total_kobo"] == 26_400_000 - 3_600_000
+    assert len(body["items"]) == 5
 
 
 def test_edit_detail_404_for_unknown_slug(client, seeded):

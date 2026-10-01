@@ -183,10 +183,10 @@ PRODUCTS = [
      [("One size", 65000)], True),
 ]
 
-# slug, title, intro, accent, accent_text, items
+# slug, title, kicker, intro, accent, accent_text, items
 # Each item: brand slug, product name, default variant label (None = first variant), note.
 EDITS = [
-    ("owambe", "The Owambe Edit",
+    ("owambe", "The Owambe Edit", "For the party season",
      "From the church to the reception: five pieces from five Nigerian brands that do the "
      "most, without trying too hard.",
      "#5E1630", "#F6EADC",
@@ -200,7 +200,7 @@ EDITS = [
        "Holds your phone, a powder and the envelope for spraying."),
       ("kade", "Whipped Shea Butter", "250 ml",
        "For the glow at 6pm, when the hall lights come on.")]),
-    ("harmattan", "The Harmattan Edit",
+    ("harmattan", "The Harmattan Edit", "November to February",
      "Shea, oil, a light jacket and lip balm for the dry, dusty months.",
      "#D9A55B", "#2A1D0E",
      [("kade", "Whipped Shea Butter", "250 ml",

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
+import useBag from '../hooks/useBag.js'
+
 const LINKS = [
   { to: '/shop', label: 'Shop all' },
   { to: '/brands', label: 'Brands' },
@@ -29,7 +31,8 @@ function MenuIcon() {
   )
 }
 
-export default function Nav({ bagCount = 0 }) {
+export default function Nav() {
+  const { count: bagCount } = useBag()
   const [open, setOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()

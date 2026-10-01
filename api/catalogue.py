@@ -13,8 +13,9 @@ from api.schemas import (
 
 router = APIRouter(prefix="/api")
 
-# The catalogue changes rarely, so Vercel's edge can serve it for a minute.
-CACHE_CONTROL = "public, s-maxage=60, stale-while-revalidate=300"
+# The catalogue changes rarely, so Vercel's edge can serve it for a minute. max-age=0 keeps
+# browsers from holding on to it themselves, so stock shown on a page is never stale for long.
+CACHE_CONTROL = "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
 
 SortOption = Literal["featured", "newest", "price_asc", "price_desc"]
 
@@ -107,8 +108,8 @@ def edit_tags_for_product(session: Session, product_id: int) -> list[EditTag]:
 
 def edit_summary(session: Session, edit: Edit) -> EditSummary:
     count = len(session.exec(select(EditItem).where(EditItem.edit_id == edit.id)).all())
-    return EditSummary(id=edit.id, slug=edit.slug, title=edit.title, intro=edit.intro,
-                       accent=edit.accent, accent_text=edit.accent_text, piece_count=count)
+    return EditSummary(id=edit.id, slug=edit.slug, title=edit.title, kicker=edit.kicker,
+                       intro=edit.intro, accent=edit.accent, accent_text=edit.accent_text, piece_count=count)
 
 
 @router.get("/brands", response_model=list[BrandOut])
@@ -195,4 +196,7 @@ def get_edit(slug: str, response: Response, session: Session = Depends(get_sessi
         if row.product_id in cards and variant is not None and variant.is_active:
             items.append(EditItemOut(position=row.position, note=row.note,
                                      product=cards[row.product_id], default_variant=variant_out(variant)))
-    return EditDetail(**edit_summary(session, edit).model_dump(), items=items)
+    in_stock = [i for i in items if i.default_variant.stock > 0]
+    return EditDetail(**edit_summary(session, edit).model_dump(), items=items,
+                      available_count=len(in_stock),
+                      total_kobo=sum(i.default_variant.price_kobo for i in in_stock))

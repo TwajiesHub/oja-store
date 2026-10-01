@@ -11,7 +11,8 @@ export default function EditTile({ edit, number }) {
     <Link to={`/edits/${edit.slug}`} className="edit-tile" style={kitStyle(edit)}>
       {Graphic && <Graphic />}
       <span className="edit-tile__label label">
-        Edit 0{number} · {edit.piece_count} pieces
+        Edit 0{number}
+        <span className="only-desktop"> · {edit.kicker}</span> · {edit.piece_count} pieces
       </span>
       <span className="edit-tile__title editorial">{edit.title}</span>
       <span className="edit-tile__foot">

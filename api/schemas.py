@@ -61,6 +61,7 @@ class EditSummary(BaseModel):
     id: int
     slug: str
     title: str
+    kicker: str
     intro: str
     accent: str
     accent_text: str
@@ -99,3 +100,6 @@ class EditItemOut(BaseModel):
 
 class EditDetail(EditSummary):
     items: list[EditItemOut]
+    # Only items whose default variant is in stock count towards these.
+    available_count: int
+    total_kobo: int

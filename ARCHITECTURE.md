@@ -125,7 +125,7 @@ User ids are Supabase auth user ids (UUID strings).
 | `categories` | id, slug (unique), name, sort_order |
 | `products` | id, slug (unique), brand_id, category_id, name, description, details, image_urls (JSON list), is_featured, is_active, created_at |
 | `variants` | id, product_id, label, sku (unique), price_kobo, stock (≥ 0), sort_order, is_active |
-| `edits` | id, slug (unique), title, intro, accent, accent_text, sort_order, is_active |
+| `edits` | id, slug (unique), title, kicker, intro, accent, accent_text, sort_order, is_active |
 | `edit_items` | id, edit_id, product_id, variant_id (default for "Add all"), position, note |
 | `profiles` | user_id (PK), email, full_name, phone, address, area, state, updated_at |
 | `bag_items` | id, user_id, variant_id, quantity (1–10), updated_at; unique (user_id, variant_id) |
@@ -141,7 +141,7 @@ never change past orders.
 Base path `/api`. JSON in snake_case. Money in kobo. Errors use FastAPI's
 `{"detail": "..."}`. Signed-in routes need `Authorization: Bearer <access token>`.
 
-### Public (catalogue responses send `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`)
+### Public (catalogue responses send `Cache-Control: public, max-age=0, s-maxage=60, stale-while-revalidate=300`)
 | Method and path | Returns |
 | --- | --- |
 | `GET /api/health` | `{ok, database}` after a real query |
