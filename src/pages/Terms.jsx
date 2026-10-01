@@ -40,7 +40,7 @@ export default function Terms() {
 
       <section className="legal__section" id="returns">
         <h2>Returns</h2>
-        <p>Unused items can be returned within 7 days.</p>
+        <p>Unused items can be returned within 7 days of delivery.</p>
         <ContactLine
           before="To start a return, email us your order number at"
           fallback="To start a return, send us your order number using the shop's contact email. It is being set up."

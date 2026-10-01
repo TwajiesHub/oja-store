@@ -1,5 +1,5 @@
 // The one place the browser talks to our backend.
-import { getAccessToken, refreshAccessToken, signOutOfSupabase } from './supabase.js'
+import { getAccessToken, getLatestAccessToken, refreshAccessToken, signOutOfSupabase } from './supabase.js'
 
 export class ApiError extends Error {
   constructor(status, message) {
@@ -39,6 +39,19 @@ async function request(method, path, body, { auth = false } = {}) {
     throw new ApiError(response.status, `${method} ${path} failed with ${response.status}`)
   }
   return response.json()
+}
+
+// For a page that is being hidden or closed. `keepalive` lets the browser finish the request after
+// the page is gone. It cannot wait for a refreshed token, so it uses the latest one it has.
+export function apiPutOnExit(path, body) {
+  const token = getLatestAccessToken()
+  if (!token) return
+  fetch(`/api${path}`, {
+    method: 'PUT',
+    keepalive: true,
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(body),
+  }).catch(() => {})
 }
 
 export const apiGet = (path, options) => request('GET', path, undefined, options)

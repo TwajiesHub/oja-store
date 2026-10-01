@@ -8,7 +8,7 @@
 //     why the owner is remembered.
 // After that, every change the shopper makes is saved to the server. Signing out empties the
 // browser bag so the next person on a shared device starts fresh.
-import { apiGet, apiPost, apiPut } from './api.js'
+import { apiGet, apiPost, apiPut, apiPutOnExit } from './api.js'
 import { clearBag, getItems, onShopperChange, replaceItems } from './bagStore.js'
 
 const OWNER_KEY = 'oja.bag.owner'
@@ -57,6 +57,7 @@ export function startBagSync(userId) {
   let stopped = false
   let saveTimer = null
   let stopListening = () => {}
+  let stopFlushing = () => {}
 
   if (!userId) {
     if (readOwner()) {
@@ -72,6 +73,19 @@ export function startBagSync(userId) {
     } catch {
       // The next change saves the whole bag again.
     }
+  }
+
+  // A save still waiting for its short delay would be lost if the page closes first, so send it
+  // now, in a way that survives the page going away.
+  function flushPending() {
+    if (saveTimer === null) return
+    clearTimeout(saveTimer)
+    saveTimer = null
+    apiPutOnExit('/bag', toRequest(getItems()))
+  }
+
+  function flushWhenHidden() {
+    if (document.visibilityState === 'hidden') flushPending()
   }
 
   async function begin() {
@@ -92,8 +106,17 @@ export function startBagSync(userId) {
         writeOwner(userId)
         stopListening = onShopperChange(() => {
           clearTimeout(saveTimer)
-          saveTimer = setTimeout(save, SAVE_DELAY_MS)
+          saveTimer = setTimeout(() => {
+            saveTimer = null
+            save()
+          }, SAVE_DELAY_MS)
         })
+        document.addEventListener('visibilitychange', flushWhenHidden)
+        window.addEventListener('pagehide', flushPending)
+        stopFlushing = () => {
+          document.removeEventListener('visibilitychange', flushWhenHidden)
+          window.removeEventListener('pagehide', flushPending)
+        }
         return
       } catch {
         await wait(RETRY_DELAY_MS)
@@ -106,5 +129,6 @@ export function startBagSync(userId) {
     stopped = true
     clearTimeout(saveTimer)
     stopListening()
+    stopFlushing()
   }
 }
