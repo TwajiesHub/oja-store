@@ -1,0 +1,21 @@
+.placeholder-page {
+  min-height: 100vh;
+  padding: 32px var(--page-gutter);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.placeholder-page .wordmark {
+  font-size: 34px;
+}
+
+.placeholder-page .display {
+  font-size: clamp(34px, 9vw, 124px);
+  max-width: 14ch;
+  overflow-wrap: break-word;
+}
+
+.placeholder-page .label {
+  color: var(--mute);
+}

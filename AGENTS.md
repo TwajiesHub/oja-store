@@ -90,7 +90,7 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt -r requirements-dev.txt
 python -m scripts.init_db        # create tables and seed the catalogue (local SQLite by default)
-uvicorn api.index:app --reload --port 8000
+uvicorn api.index:app --reload --port 8000 --env-file .env
 pytest
 ```
 
