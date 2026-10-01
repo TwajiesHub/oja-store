@@ -13,7 +13,7 @@ def test_seed_creates_the_full_catalogue(session):
 
     assert count(session, Brand) == 6
     assert count(session, Category) == 4
-    assert count(session, Product) == 22
+    assert count(session, Product) == 25
     assert count(session, Edit) == 2
     assert count(session, EditItem) == 9
 
@@ -64,3 +64,20 @@ def test_edit_items_point_at_in_stock_variants(session):
         variant = session.get(Variant, item.variant_id)
         assert variant.product_id == item.product_id
         assert variant.stock > 0
+
+
+def test_add_missing_columns_upgrades_an_m0_brands_table(tmp_path):
+    from sqlalchemy import inspect, text
+    from api.db import make_engine
+    from scripts.init_db import add_missing_columns
+
+    engine = make_engine(f"sqlite:///{tmp_path}/m0.db")
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE brands (id INTEGER PRIMARY KEY, slug VARCHAR)"))
+
+    add_missing_columns(engine)
+    add_missing_columns(engine)  # running twice must be safe
+
+    columns = {c["name"] for c in inspect(engine).get_columns("brands")}
+    assert {"descriptor", "slogan"} <= columns
+    engine.dispose()

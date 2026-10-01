@@ -1,0 +1,349 @@
+/* Home, listing pages (shop, brands). */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px var(--page-gutter) 30px;
+}
+
+.hero__eyebrow {
+  color: var(--mute);
+}
+
+/* "made-in-Nigeria," is one long unbreakable word, so the size is chosen to always fit. */
+.hero__headline {
+  font-size: clamp(32px, 9.4vw, 76px);
+}
+
+.hero__foot {
+  display: contents;
+}
+
+.hero__intro {
+  font-size: 16px;
+  line-height: 1.55;
+  color: #3b3833;
+}
+
+.hero__actions {
+  order: 5;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.hero__actions .button {
+  flex: 1;
+  height: 54px;
+}
+
+.cover-story {
+  order: 4;
+  position: relative;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  background: var(--stone-dark);
+}
+
+.cover-story__label,
+.cover-story__number {
+  position: absolute;
+  top: 12px;
+}
+
+.cover-story__label {
+  left: 12px;
+}
+
+.cover-story__number {
+  right: 20px;
+}
+
+.cover-story__photo {
+  max-width: 340px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+  text-align: center;
+  color: #4a463f;
+}
+
+.cover-story__caption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.cover-story__link {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+}
+
+@media (min-width: 768px) {
+  .hero {
+    padding-top: 40px;
+    padding-bottom: 56px;
+  }
+
+  .hero__headline {
+    font-size: clamp(56px, 10vw, 100px);
+  }
+
+  .hero__intro {
+    font-size: 19px;
+    max-width: 460px;
+  }
+
+  .hero__actions .button {
+    flex: none;
+    padding: 0 28px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    grid-template-rows: auto 1fr auto;
+    column-gap: 48px;
+    row-gap: 24px;
+    min-height: 780px;
+    padding: 56px var(--page-gutter) 64px;
+  }
+
+  /* 108px at 1440px wide. The width axis is eased to 100% and the text column widened so
+     "made-in-Nigeria," fits without running under the cover story. The 0.0855 factor is
+     that word's width per pixel of column (viewport minus gutters, column gap and a scrollbar). */
+  .hero__headline {
+    font-size: min(108px, calc((100vw - 175px) * 0.0855));
+    font-stretch: 100%;
+    align-self: center;
+  }
+
+  .hero__foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+  }
+
+  .hero__actions {
+    order: 0;
+    flex: none;
+  }
+
+  .cover-story {
+    order: 0;
+    grid-column: 2;
+    grid-row: 1 / 4;
+    height: auto;
+    padding: 48px;
+  }
+
+  .cover-story__label,
+  .cover-story__number {
+    top: 20px;
+  }
+
+  .cover-story__label {
+    left: 20px;
+  }
+
+  .cover-story__photo {
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .cover-story__caption {
+    left: 20px;
+    bottom: 20px;
+    font-size: 30px;
+  }
+}
+
+.home-section {
+  padding: 28px var(--page-gutter) 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.home-section--ruled {
+  border-top: 1px solid var(--line);
+}
+
+.home-section__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.home-section__head .display {
+  font-size: clamp(26px, 8.6vw, 34px);
+}
+
+.home-section--edits {
+  gap: 10px;
+  padding-top: 0;
+}
+
+.product-grid--four.product-grid--arrivals {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .home-section {
+    padding-top: 88px;
+    padding-bottom: 96px;
+    gap: 36px;
+  }
+
+  .home-section__head {
+    align-items: flex-end;
+  }
+
+  .home-section__head .display {
+    font-size: clamp(44px, 6vw, 80px);
+  }
+
+  .home-section--edits {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    padding-top: 0;
+  }
+}
+
+/* Category rows */
+
+.category-rows {
+  padding-top: 12px;
+  padding-bottom: 36px;
+  gap: 0;
+}
+
+.category-rows__title {
+  color: var(--mute);
+  margin-bottom: 10px;
+}
+
+.category-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+
+.category-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.category-row__name {
+  font-size: 40px;
+}
+
+.category-row__side {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.category-row__brands {
+  color: var(--mute);
+}
+
+.category-row__arrow {
+  font-size: 22px;
+}
+
+@media (min-width: 768px) {
+  .category-rows {
+    padding-top: 40px;
+    padding-bottom: 96px;
+  }
+
+  .category-row {
+    padding: 26px 0;
+  }
+
+  .category-row:last-child {
+    border-bottom: none;
+  }
+
+  .category-row__name {
+    font-size: clamp(48px, 7.2vw, 104px);
+  }
+
+  .category-row__arrow {
+    font-size: 40px;
+  }
+}
+
+.promises {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .promises {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px;
+    padding: 64px var(--page-gutter);
+    background: var(--stone);
+  }
+
+  .promises__item {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .promises__item p {
+    font-size: 22px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+}
+
+/* Shop and brands index */
+
+.listing {
+  padding: 32px var(--page-gutter) 72px;
+}
+
+.listing__title {
+  font-size: 44px;
+}
+
+.listing__count {
+  color: var(--mute);
+  margin-bottom: 20px;
+}
+
+.brand-tiles--index {
+  margin-top: 28px;
+}
+
+@media (min-width: 768px) {
+  .listing {
+    padding-top: 40px;
+  }
+
+  .listing__title {
+    font-size: 64px;
+  }
+
+  .listing__count {
+    margin-bottom: 28px;
+  }
+}

@@ -29,27 +29,34 @@ CATEGORIES = [
     ("leather-home", "Leather & home"),
 ]
 
-# slug, name, tagline, city, accent, accent_text, type_pairing, story
+# slug, name, tagline, city, accent, accent_text, type_pairing, descriptor, slogan, story
+# The slogan is the pull line on the brand page. Keep it evocative, never a checkable claim.
 BRANDS = [
     ("danfo", "DANFO", "Streetwear built for Lagos", "Lagos", "#F2B705", "#111110", "condensed",
+     "Streetwear", "Built for 34° and go-slow.",
      "DANFO takes its look from the yellow buses that cross Lagos all day. The pieces are made "
      "for the same life: long commutes, loud streets, and clothes that keep up. Bold, practical "
      "and cut to be worn hard."),
     ("elu", "Elú", "Modern hand-dyed adire", "Abeokuta", "#1E2B55", "#F4EFE4", "serif",
-     "Elú works with adire, the indigo resist-dyed cloth of Abeokuta. Each length is patterned "
-     "and dyed by hand, then cut into clean, modern shapes. No two pieces come out exactly alike."),
+     "Adire", "Indigo that moves with you.",
+     "Elú works with adire, the indigo resist-dyed cloth of Abeokuta, and cuts it into clean, "
+     "modern shapes. The patterns are dyed by hand, so no two pieces come out exactly alike."),
     ("kade", "kade", "Raw shea, whipped soft", "Lagos", "#EFE4D2", "#241A13", "soft-serif",
-     "kade makes skincare from raw shea butter, whipped until it spreads easily. The list of "
-     "ingredients is short on purpose. It is made for dry skin, dry weather and daily use."),
+     "Shea skincare", "Raw shea, whipped soft.",
+     "kade makes skincare from raw shea butter, whipped until it spreads easily. It is made for "
+     "dry skin, dry weather and daily use."),
     ("ivie", "IVIE", "Coral and brass from Benin City", "Benin City", "#0E0B09", "#C9A24A", "didone",
-     "IVIE draws on the coral beads and brasswork of Benin City, where both carry deep meaning. "
-     "Each piece is made to be worn for ceremonies and for every day after."),
+     "Coral & brass", "Worn like a crown, every day.",
+     "IVIE draws on the coral beads and brasswork of Benin City. Each piece is made to be worn "
+     "for ceremonies and for every day after."),
     ("kofa", "Kofa", "Hand-tooled Kano leather", "Kano", "#8A4B24", "#F6E9D8", "display-serif",
-     "Kofa works in the leather tradition of Kano, one of the oldest in West Africa. Hides are "
-     "cut, tooled and stitched by hand into bags, shoes and small goods that soften with use."),
+     "Leather", "Leather that learns you.",
+     "Kofa works in the leather tradition of Kano. Hides are cut, tooled and stitched by hand "
+     "into bags, shoes and small goods that soften with use."),
     ("oke", "oke", "Aso-oke, woven in Iseyin", "Iseyin", "#1F6F6B", "#F1F5EF", "grotesk",
-     "oke is woven on narrow looms in Iseyin, the town known for aso-oke. The cloth is "
-     "traditionally made for celebrations. oke also shapes it into pieces for the home."),
+     "Aso-oke", "Woven for gathering.",
+     "oke is woven on narrow looms in Iseyin. Aso-oke is traditionally made for celebrations, "
+     "and oke also shapes it into pieces for the home."),
 ]
 
 # brand slug, name, category slug, description, details, [(variant label, price in naira)], featured
@@ -78,6 +85,20 @@ PRODUCTS = [
      "A six-panel cap with an embroidered bus on the front. One size, with an adjustable strap.",
      "Cotton twill. Adjustable back strap.",
      [("One size", 12000)], False),
+    ("danfo", "Okada Cargo Pants", "clothing",
+     "Roomy cargo pants with deep side pockets and a drawcord hem. Made for carrying a lot "
+     "and moving fast.",
+     "Cotton twill. Relaxed fit. Waist sizes 28 to 38.",
+     [(str(s), 38000) for s in range(28, 40, 2)], False),
+    ("danfo", "Route Tote", "clothing",
+     "A canvas tote printed with a bus route map, with straps long enough for the shoulder. "
+     "Fits a laptop and lunch.",
+     "Heavy canvas, one inside pocket.",
+     [("One size", 15000)], False),
+    ("danfo", "Bus Stop Socks, 3 pairs", "clothing",
+     "Three pairs of cotton-blend socks in one pack. Ribbed, snug and a little loud.",
+     "Cotton blend. Pack of three pairs, one size.",
+     [("One size", 8000)], False),
     ("elu", "Olokun Wrap Dress", "clothing",
      "A long wrap dress in deep indigo adire, tied at the waist. It moves well and fits "
      "a range of shapes.",
@@ -100,8 +121,8 @@ PRODUCTS = [
      "Raw shea butter, whipped. Keep out of direct heat.",
      [("100 ml", 9500), ("250 ml", 18000)], True),
     ("kade", "Shea and Baobab Oil", "beauty",
-     "A light oil for face, body and hair. Shea and baobab, nothing else, and it absorbs "
-     "without leaving a film.",
+     "A light oil for face, body and hair. Shea and baobab, and it absorbs without leaving "
+     "a film.",
      "50 ml bottle. Use a few drops on damp skin.",
      [("50 ml", 12500)], False),
     ("kade", "Shea Lip Balm", "beauty",

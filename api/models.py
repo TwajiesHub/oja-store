@@ -47,6 +47,9 @@ class Brand(SQLModel, table=True):
     tagline: str
     story: str
     city: str
+    # A short category label for tiles, e.g. "Streetwear", and the pull line on the brand page.
+    descriptor: str = ""
+    slogan: str = ""
     accent: str
     accent_text: str
     # condensed, serif, soft-serif, didone, display-serif or grotesk

@@ -64,11 +64,12 @@ Tests: pytest ──▶ temporary SQLite, Paystack and Mailgun mocked
 ├── tests/                conftest (temp SQLite, fake Paystack/Mailgun, signed test tokens) and one file per router
 ├── src/
 │   ├── main.jsx, App.jsx (routes)
-│   ├── lib/  api.js · supabase.js · money.js · dates.js
-│   ├── hooks/  useAuth.js · useBag.js
+│   ├── lib/  api.js · supabase.js · money.js · dates.js · brandKit.js · variants.js
+│   ├── hooks/  useApi.js · usePageTitle.js · useAuth.js · useBag.js
 │   ├── components/  Nav, AnnouncementBar, Footer, ProductCard, BrandChip,
 │   │                BrandTile, EditTile, Placeholder, VariantPicker,
-│   │                QuantityStepper, Button, EmptyState, ErrorState
+│   │                QuantityStepper, Button, EmptyState, ErrorState, Loading,
+│   │                FilterBar, Layout, Illustrations
 │   ├── pages/  Home, Shop, Brands, Brand, Product, Edit, Bag, Checkout,
 │   │           CheckoutComplete, Orders, OrderDetail, Privacy, Terms, NotFound
 │   └── styles/  tokens.css · base.css · components.css
@@ -120,7 +121,7 @@ User ids are Supabase auth user ids (UUID strings).
 
 | Table | Columns |
 | --- | --- |
-| `brands` | id, slug (unique), name, tagline, story, city, accent, accent_text, type_pairing (`condensed`, `serif`, `soft-serif`, `didone`, `display-serif`, `grotesk`), hero_image_url (nullable), sort_order, is_active |
+| `brands` | id, slug (unique), name, tagline, descriptor, slogan, story, city, accent, accent_text, type_pairing (`condensed`, `serif`, `soft-serif`, `didone`, `display-serif`, `grotesk`), hero_image_url (nullable), sort_order, is_active |
 | `categories` | id, slug (unique), name, sort_order |
 | `products` | id, slug (unique), brand_id, category_id, name, description, details, image_urls (JSON list), is_featured, is_active, created_at |
 | `variants` | id, product_id, label, sku (unique), price_kobo, stock (≥ 0), sort_order, is_active |
