@@ -9,6 +9,7 @@ first created, so reseeding never undoes real sales.
 import argparse
 import os
 
+from sqlalchemy import inspect, text
 from sqlmodel import Session, SQLModel, select
 
 from api import config
@@ -22,6 +23,20 @@ def load_dotenv_for_local_use() -> None:
     from dotenv import load_dotenv
 
     load_dotenv()
+
+
+# Columns added after M0. create_all never alters an existing table, so add them here.
+ADDED_COLUMNS = [("brands", "descriptor"), ("brands", "slogan")]
+
+
+def add_missing_columns(engine) -> None:
+    """Portable ALTER TABLE for columns that older databases (M0) don't have yet."""
+    inspector = inspect(engine)
+    with engine.begin() as connection:
+        for table, column in ADDED_COLUMNS:
+            existing = {c["name"] for c in inspector.get_columns(table)}
+            if column not in existing:
+                connection.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} VARCHAR NOT NULL DEFAULT ''"))
 
 
 def upsert(session: Session, model, lookup: dict, values: dict):
@@ -46,11 +61,11 @@ def seed_categories(session: Session) -> dict[str, Category]:
 
 def seed_brands(session: Session) -> dict[str, Brand]:
     rows = {}
-    for order, (slug, name, tagline, city, accent, accent_text, pairing, story) in enumerate(BRANDS):
+    for order, (slug, name, tagline, city, accent, accent_text, pairing, descriptor, slogan, story) in enumerate(BRANDS):
         rows[slug] = upsert(session, Brand, {"slug": slug}, {
             "name": name, "tagline": tagline, "city": city, "accent": accent,
-            "accent_text": accent_text, "type_pairing": pairing, "story": story,
-            "sort_order": order,
+            "accent_text": accent_text, "type_pairing": pairing, "descriptor": descriptor,
+            "slogan": slogan, "story": story, "sort_order": order,
         })
     return rows
 
@@ -121,6 +136,7 @@ def main() -> None:
 
     engine = make_engine(url)
     SQLModel.metadata.create_all(engine)
+    add_missing_columns(engine)
     with Session(engine) as session:
         seed(session)
         brands = len(session.exec(select(Brand)).all())
