@@ -64,11 +64,12 @@ Tests: pytest ──▶ temporary SQLite, Paystack and Mailgun mocked
 ├── tests/                conftest (temp SQLite, fake Paystack/Mailgun, signed test tokens) and one file per router
 ├── src/
 │   ├── main.jsx, App.jsx (routes)
-│   ├── lib/  api.js · supabase.js · money.js · dates.js
-│   ├── hooks/  useAuth.js · useBag.js
+│   ├── lib/  api.js · supabase.js · money.js · dates.js · brandKit.js · variants.js
+│   ├── hooks/  useApi.js · usePageTitle.js · useAuth.js · useBag.js
 │   ├── components/  Nav, AnnouncementBar, Footer, ProductCard, BrandChip,
 │   │                BrandTile, EditTile, Placeholder, VariantPicker,
-│   │                QuantityStepper, Button, EmptyState, ErrorState
+│   │                QuantityStepper, Button, EmptyState, ErrorState, Loading,
+│   │                FilterBar, Layout, Illustrations
 │   ├── pages/  Home, Shop, Brands, Brand, Product, Edit, Bag, Checkout,
 │   │           CheckoutComplete, Orders, OrderDetail, Privacy, Terms, NotFound
 │   └── styles/  tokens.css · base.css · components.css
