@@ -98,6 +98,7 @@ Names match what is set in Vercel. `.env.example` lists them with no values.
 | --- | --- | --- | --- |
 | `VITE_SUPABASE_URL` | No | Browser and server | `https://<ref>.supabase.co` |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | No | Browser | `sb_publishable_…` |
+| `VITE_CONTACT_EMAIL` | No | Browser | Shown on the privacy and terms pages for deletion and return requests |
 | `VITE_PAYSTACK_PUBLIC_KEY` | No | Browser | `pk_test_…` (not needed for redirect checkout; keep for later) |
 | `SUPABASE_SECRET_KEY` | **Yes** | Server | Not used by the app yet; reserved for admin scripts |
 | `SUPABASE_JWKS_URL` | No | Server | `<SUPABASE_URL>/auth/v1/.well-known/jwks.json` |
@@ -158,8 +159,9 @@ Base path `/api`. JSON in snake_case. Money in kobo. Errors use FastAPI's
 | --- | --- | --- |
 | `GET /api/me` | | profile (created from the token on first call) |
 | `PUT /api/me` | name, phone, address fields | profile |
-| `GET /api/bag` | | items with server prices, stock flags, subtotal |
-| `PUT /api/bag` | `{items: [{variant_id, quantity}]}` | replaces the whole bag; quantities clamped to stock and 10 |
+| `GET /api/bag` | | the saved bag as the priced quote (same shape as `POST /api/bag/quote`); items no longer sold are reported once and removed |
+| `PUT /api/bag` | `{items: [{variant_id, quantity}]}` | replaces the whole bag and returns the priced quote. Quantities are clamped to stock and 10; a sold-out item keeps 1 so it still shows, flagged; unknown variants are dropped |
+| `POST /api/bag/merge` | `{items: [{variant_id, quantity}]}` | adds a guest bag into the saved one when someone signs in (quantities add up, capped at stock and 10) and returns the quote. Done on the server so two tabs signing in cannot double-count |
 | `POST /api/checkout` | delivery fields + `delivery_speed` | `{order_number, authorization_url, reference}`; 409 if the bag is empty or anything is out of stock |
 | `POST /api/orders/{number}/pay` | | new attempt for an unpaid order: `{authorization_url, reference}` |
 | `POST /api/payments/verify` | `{reference}` | `{status: "paid" | "pending" | "failed", order_number}` |
@@ -175,7 +177,7 @@ Base path `/api`. JSON in snake_case. Money in kobo. Errors use FastAPI's
 2. Supabase handles Google and returns the user with a session. `useAuth` exposes the user and access token.
 3. `api.js` adds `Authorization: Bearer <token>` to signed-in requests.
 4. `auth.py` verifies the token with `PyJWKClient(SUPABASE_JWKS_URL)` (keys cached for an hour): signature, expiry, `aud == "authenticated"`, issuer `<SUPABASE_URL>/auth/v1`. The user id is `sub`.
-5. On sign-in, `useBag` merges the guest bag into `PUT /api/bag` and clears localStorage.
+5. On sign-in, `lib/bagSync.js` merges the guest bag with `POST /api/bag/merge`. The browser bag then mirrors the saved bag, and every change is saved with `PUT /api/bag` (debounced). The mirror remembers whose it is (`oja.bag.owner`): on later visits it loads `GET /api/bag` instead of merging, and a bag that belongs to someone else is dropped. Signing out empties it.
 
 In M4, confirm the project's JWKS returns keys. If it's empty (legacy shared-secret
 signing), switch verification to calling `<SUPABASE_URL>/auth/v1/user` with the

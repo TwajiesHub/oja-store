@@ -9,8 +9,10 @@ import Edit from './pages/Edit.jsx'
 import Edits from './pages/Edits.jsx'
 import Home from './pages/Home.jsx'
 import NotFound from './pages/NotFound.jsx'
+import Privacy from './pages/Privacy.jsx'
 import Product from './pages/Product.jsx'
 import Shop from './pages/Shop.jsx'
+import Terms from './pages/Terms.jsx'
 
 export default function App() {
   return (
@@ -26,8 +28,8 @@ export default function App() {
         <Route path="edits/:slug" element={<Edit />} />
         <Route path="bag" element={<Bag />} />
         <Route path="orders" element={<ComingSoon title="Your orders" />} />
-        <Route path="privacy" element={<ComingSoon title="Privacy" />} />
-        <Route path="terms" element={<ComingSoon title="Terms" />} />
+        <Route path="privacy" element={<Privacy />} />
+        <Route path="terms" element={<Terms />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

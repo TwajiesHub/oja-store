@@ -12,9 +12,9 @@ export default function Footer() {
         </div>
         <div className="site-footer__group">
           <span className="label">Help</span>
-          <Link to="/terms">Delivery</Link>
+          <Link to="/terms#delivery">Delivery</Link>
           <Link to="/orders">Your orders</Link>
-          <Link to="/terms">Returns</Link>
+          <Link to="/terms#returns">Returns</Link>
         </div>
         <div className="site-footer__group">
           <span className="label">Ọjà</span>

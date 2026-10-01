@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
+import useAuth from '../hooks/useAuth.js'
 import useBag from '../hooks/useBag.js'
+import AccountMenu from './AccountMenu.jsx'
 
 const LINKS = [
   { to: '/shop', label: 'Shop all' },
@@ -32,8 +34,9 @@ function MenuIcon() {
 }
 
 export default function Nav() {
-  const { count: bagCount } = useBag()
   const [open, setOpen] = useState(false)
+  const { count: bagCount } = useBag()
+  const { user, loading, available, signIn, signOut } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const onProductPage = location.pathname.startsWith('/products/')
@@ -91,13 +94,30 @@ export default function Nav() {
         <Link to="/" className="site-nav__wordmark wordmark" aria-label="Ọjà home">Ọjà</Link>
         <nav className="site-nav__links" aria-label="Main">{renderLinks()}</nav>
         <div className="site-nav__right">
-          <button type="button" className="site-nav__signin">Sign in</button>
+          <div className="site-nav__account">
+            <AccountMenu />
+          </div>
           <Link to="/bag" className="site-nav__bag label">Bag ({bagCount})</Link>
         </div>
       </div>
       <nav id="site-menu" className="site-nav__panel" aria-label="Menu" hidden={!open}>
         {renderLinks()}
-        <button type="button" className="site-nav__panel-signin">Sign in</button>
+        {!loading && available && user && (
+          <>
+            <span className="site-nav__panel-email label">{user.email}</span>
+            <Link to="/orders">Your orders</Link>
+            <button type="button" className="site-nav__panel-button" onClick={signOut}>Sign out</button>
+          </>
+        )}
+        {!loading && available && !user && (
+          <button
+            type="button"
+            className="site-nav__panel-button"
+            onClick={() => signIn(`${location.pathname}${location.search}`)}
+          >
+            Sign in
+          </button>
+        )}
       </nav>
     </header>
   )

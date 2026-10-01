@@ -2,8 +2,9 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
+from api.nigeria import canonical_state, normalise_phone
 from api.pricing import MAX_QUANTITY
 
 MAX_BAG_LINES = 50
@@ -150,3 +151,44 @@ class BagQuote(BaseModel):
     item_count: int
     subtotal_kobo: int
     free_delivery_remaining_kobo: int
+
+
+class ProfileOut(BaseModel):
+    user_id: str
+    email: str
+    full_name: str
+    phone: str
+    address: str
+    area: str
+    state: str
+
+
+class ProfileIn(BaseModel):
+    """Contact and delivery details. Trimmed and checked here, so every route gets clean values."""
+
+    full_name: str = Field(min_length=2, max_length=100)
+    phone: str
+    address: str = Field(min_length=5, max_length=200)
+    area: str = Field(min_length=2, max_length=100)
+    state: str
+
+    @field_validator("full_name", "address", "area", "phone", "state", mode="before")
+    @classmethod
+    def trim(cls, value):
+        return value.strip() if isinstance(value, str) else value
+
+    @field_validator("phone")
+    @classmethod
+    def valid_phone(cls, value: str) -> str:
+        phone = normalise_phone(value)
+        if phone is None:
+            raise ValueError("Enter a Nigerian mobile number, like 0803 000 0000")
+        return phone
+
+    @field_validator("state")
+    @classmethod
+    def valid_state(cls, value: str) -> str:
+        state = canonical_state(value)
+        if state is None:
+            raise ValueError("Choose a Nigerian state")
+        return state
