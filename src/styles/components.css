@@ -326,7 +326,7 @@
 
 .chip {
   flex: none;
-  height: 40px;
+  height: 44px;
   padding: 0 16px;
   border: 1px solid var(--ink);
   background: transparent;
@@ -353,7 +353,7 @@
 }
 
 .filter-bar__select select {
-  height: 40px;
+  height: 44px;
   padding: 0 12px;
   border: 1px solid var(--ink);
   background: transparent;

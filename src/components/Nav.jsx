@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 
 import useAuth from '../hooks/useAuth.js'
@@ -35,6 +35,7 @@ function MenuIcon() {
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
+  const menuButton = useRef(null)
   const { count: bagCount } = useBag()
   const { user, loading, available, signIn, signOut } = useAuth()
   const location = useLocation()
@@ -45,6 +46,18 @@ export default function Nav() {
   useEffect(() => {
     setOpen(false)
   }, [location.pathname, location.search])
+
+  useEffect(() => {
+    if (!open) return undefined
+    function closeOnEscape(event) {
+      if (event.key === 'Escape') {
+        setOpen(false)
+        menuButton.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [open])
 
   function goBack() {
     // A page opened directly has no history to go back to.
@@ -81,6 +94,7 @@ export default function Nav() {
           </button>
         ) : (
           <button
+            ref={menuButton}
             type="button"
             className="site-nav__icon"
             aria-label="Menu"

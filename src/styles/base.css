@@ -78,6 +78,44 @@ button {
   padding-bottom: 4px;
 }
 
+/* The ring is ink, which vanishes on ink: use paper on the dark surfaces. */
+.site-footer :focus-visible,
+.announcement-bar :focus-visible,
+.brand-about :focus-visible,
+.look-bar :focus-visible {
+  outline-color: var(--paper);
+}
+
+/* After a page change focus moves here, so a keyboard user starts at the content. */
+main:focus {
+  outline: none;
+}
+
+/* Small links keep their look but get a 44px-tall tap area. */
+.text-link,
+.product-page__chip,
+.product-info__by,
+.bag-line__name,
+.breadcrumb a,
+.site-nav__wordmark,
+.checkout-header__wordmark,
+.checkout-header__back {
+  position: relative;
+}
+
+.text-link::after,
+.product-page__chip::after,
+.product-info__by::after,
+.bag-line__name::after,
+.breadcrumb a::after,
+.site-nav__wordmark::after,
+.checkout-header__wordmark::after,
+.checkout-header__back::after {
+  content: '';
+  position: absolute;
+  inset: -14px -8px;
+}
+
 .skip-link {
   position: absolute;
   left: -9999px;

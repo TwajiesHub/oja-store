@@ -30,7 +30,7 @@ do once real photos arrive.
 | `--stone` | `#E4DED2` | Product image slots, summary panels |
 | `--stone-dark` | `#D8D1C3` | Cover story slot, thumbnails |
 | `--line` | `#CFC8BB` | Hairlines and borders |
-| `--mute` | `#6A645B` | Secondary text, labels |
+| `--mute` | `#665F56` | Secondary text, labels (darkened from `#6A645B` so it passes AA on the stone panels) |
 | `--field` | `#FBFAF6` | Input backgrounds |
 | `--ok` | `#1F6F6B` | Paid, success |
 | `--error` | `#9E2B2B` | Payment failed, form errors |

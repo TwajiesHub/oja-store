@@ -22,6 +22,15 @@ def seed_stock(sku: str) -> int:
     return MIN_SEED_STOCK + zlib.crc32(sku.encode()) % spread
 
 
+def seed_skus() -> dict[str, int]:
+    """Every catalogue variant's sku and its seed stock, for putting stock back after testing."""
+    return {
+        f"{slugify(name)}-{slugify(label)}".upper(): seed_stock(f"{slugify(name)}-{slugify(label)}".upper())
+        for _, name, _, _, _, variants, _ in PRODUCTS
+        for label, _ in variants
+    }
+
+
 CATEGORIES = [
     ("clothing", "Clothing"),
     ("beauty", "Beauty"),
