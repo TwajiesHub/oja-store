@@ -91,7 +91,11 @@ export function PaidScreen({ order }) {
       }
     >
       <h1 className="display result__title">Payment received. <span className="editorial">Thank you, {firstName}.</span></h1>
-      <p className="result__text">Your order is confirmed and saved.</p>
+      <p className="result__text">
+        {order.receipt_sent
+          ? `Your receipt is on its way to ${order.email}. Check spam if it isn't in your inbox within a few minutes.`
+          : 'Your order is confirmed and saved. We have not been able to send your receipt email yet; you can always find the order under Your orders.'}
+      </p>
       {order.arriving_from && (
         <div className="result__box result__box--arriving">
           <span className="label">Arriving</span>

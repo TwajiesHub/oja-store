@@ -18,7 +18,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel
 
-from api import paystack
+from api import mail, paystack
 from api.auth import signing_key_provider
 from api.db import get_session, make_engine
 from api.index import app
@@ -104,4 +104,28 @@ def fake_paystack(monkeypatch):
     fake = FakePaystack()
     monkeypatch.setattr(paystack, "initialize_transaction", fake.initialize_transaction)
     monkeypatch.setattr(paystack, "verify_transaction", fake.verify_transaction)
+    return fake
+
+
+# The real function, kept before the autouse fake replaces it, so its own tests can reach it.
+REAL_SEND_EMAIL = mail.send_email
+
+
+class FakeMailgun:
+    """Stands in for Mailgun. Every test gets one, so no test can send a real email."""
+
+    def __init__(self):
+        self.sent: list[dict] = []
+        self.fail_with: str | None = None
+
+    def send_email(self, **kwargs) -> None:
+        if self.fail_with:
+            raise mail.MailgunError(self.fail_with)
+        self.sent.append(kwargs)
+
+
+@pytest.fixture(autouse=True)
+def fake_mailgun(monkeypatch):
+    fake = FakeMailgun()
+    monkeypatch.setattr(mail, "send_email", fake.send_email)
     return fake

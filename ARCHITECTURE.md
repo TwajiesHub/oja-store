@@ -234,7 +234,19 @@ and return 200 quickly for every event type.
 brand, totals in naira, delivery details, expected working-day dates) and sends
 with `POST {MAILGUN_API_BASE}/v3/{MAILGUN_DOMAIN}/messages` using basic auth
 (`api`, `MAILGUN_API_KEY`), `from` = `MAILGUN_FROM`, `to` = order email. While on
-the sandbox, only authorized recipients receive it.
+the sandbox, only authorized recipients receive it. `MAILGUN_FROM` must include an
+address, like `Oja <orders@sandbox….mailgun.org>`; one without an `@` is rejected by Mailgun.
+
+The send is claimed first: `UPDATE orders SET email_sent_at = now WHERE id = :id AND
+email_sent_at IS NULL`. Only the caller that changed a row sends, so two callers at once
+(webhook and verify) cannot both send. If the send fails, `email_sent_at` is cleared and the
+reason is kept in `email_error`, and the next verify or webhook for that order tries again.
+A failed email never changes the order or the answer to the webhook or verify call. The email
+is sent during that request, with a 10 s timeout, because serverless can stop background work
+once the response is sent. The HTML and text templates are read from `api/emails/`, which
+`vercel.json` lists under `includeFiles` so they are deployed with the function.
+The email uses system fonts and inline styles, because web fonts and stylesheets do not load in
+most mail clients.
 
 ## Database connection
 

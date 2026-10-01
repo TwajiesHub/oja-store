@@ -14,6 +14,13 @@ _PHONE = re.compile(r"^(?:\+?234|0)([789][01]\d{8})$")
 _PHONE_SEPARATORS = re.compile(r"[\s\-().]")
 
 
+def format_phone(phone: str) -> str:
+    """+2348030000000 shown as +234 803 000 0000. Anything else is shown as it is."""
+    if len(phone) == 14 and phone.startswith("+234") and phone[1:].isdigit():
+        return f"+234 {phone[4:7]} {phone[7:10]} {phone[10:]}"
+    return phone
+
+
 def canonical_state(value: str) -> str | None:
     """The state's proper spelling, or None if it is not a Nigerian state."""
     wanted = value.strip().lower()

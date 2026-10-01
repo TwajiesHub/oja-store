@@ -58,6 +58,25 @@ def order_number(order_id: int) -> str:
     return f"OJA-{ORDER_NUMBER_OFFSET + order_id}"
 
 
+WEEKDAYS = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+
+def format_day(day: date, with_year: bool = False) -> str:
+    """"Fri 2 Oct", or "Fri 2 Oct 2026" with the year."""
+    text = f"{WEEKDAYS[day.weekday()]} {day.day} {MONTHS[day.month - 1]}"
+    return f"{text} {day.year}" if with_year else text
+
+
+def format_arrival(earliest: date, latest: date) -> str:
+    """"Mon 5 – Wed 7 Oct" for a window, "Fri 2 Oct" for a single day."""
+    if earliest == latest:
+        return format_day(earliest)
+    if earliest.month == latest.month:
+        return f"{WEEKDAYS[earliest.weekday()]} {earliest.day} – {format_day(latest)}"
+    return f"{format_day(earliest)} – {format_day(latest)}"
+
+
 def add_working_days(start: date, days: int) -> date:
     """The date `days` working days after `start`. Public holidays are not counted out."""
     current = start

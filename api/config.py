@@ -20,6 +20,9 @@ MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN", "")
 MAILGUN_API_BASE = os.environ.get("MAILGUN_API_BASE", "https://api.mailgun.net")
 MAILGUN_FROM = os.environ.get("MAILGUN_FROM", "")
 
+# Shown in emails and on the site for help, deletion and return requests.
+CONTACT_EMAIL = os.environ.get("VITE_CONTACT_EMAIL", "")
+
 APP_URL = os.environ.get("APP_URL", "")
 # Vercel gives every preview its own address, without the https://.
 VERCEL_URL = os.environ.get("VERCEL_URL", "")

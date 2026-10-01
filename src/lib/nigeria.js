@@ -24,3 +24,8 @@ export function validateDelivery(values) {
   if (!STATES.includes(values.state)) errors.state = 'Choose a state'
   return errors
 }
+
+// +2348030000000 shown as +234 803 000 0000. Anything else is shown as it is.
+export function formatPhone(phone) {
+  return /^\+234\d{10}$/.test(phone) ? `+234 ${phone.slice(4, 7)} ${phone.slice(7, 10)} ${phone.slice(10)}` : phone
+}

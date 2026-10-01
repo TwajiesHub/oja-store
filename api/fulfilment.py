@@ -9,6 +9,7 @@ import re
 from sqlalchemy import delete, update
 from sqlmodel import Session, select
 
+from api.mail import send_order_confirmation
 from api.models import BagItem, Order, OrderItem, Variant, utc_now
 
 logger = logging.getLogger("oja.fulfilment")
@@ -56,7 +57,11 @@ def mark_paid(session: Session, reference: str, amount_kobo: int | None, currenc
     if claim.rowcount == 0:
         session.rollback()
         session.refresh(order)
-        return ALREADY_PAID if order.status == "paid" else NOT_PAYABLE
+        if order.status != "paid":
+            return NOT_PAYABLE
+        # Paid already, but the email may have failed last time: try again.
+        send_order_confirmation(session, order.id)
+        return ALREADY_PAID
 
     stock_issue = False
     for item in session.exec(select(OrderItem).where(OrderItem.order_id == order.id)).all():
@@ -75,4 +80,5 @@ def mark_paid(session: Session, reference: str, amount_kobo: int | None, currenc
     session.exec(delete(BagItem).where(BagItem.user_id == order.user_id))
     session.commit()
     logger.info("Order %s paid (reference %s)", order.number, reference)
+    send_order_confirmation(session, order.id)
     return PAID
