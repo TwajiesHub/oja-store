@@ -30,6 +30,9 @@ FAILED = "failed"
 NOT_PAID = "not_paid"
 
 MONO = "font-family:Consolas,'Courier New',monospace;"
+# Prices are set in the plain body font with no letter-spacing. A monospace fallback (as on Gmail
+# for Android) gives the comma a full-width cell and spreads "₦46,000" out as "₦46, 000".
+FIGURE = "font-family:Helvetica,Arial,sans-serif;letter-spacing:0;"
 
 
 class MailgunError(Exception):
@@ -92,7 +95,7 @@ def _items_html(groups: dict[str, list[OrderItem]]) -> str:
         for item in brand_items:
             rows.append(
                 f'<tr><td style="padding:10px 0;border-bottom:1px solid #D9D3C7;font-size:15px;">{escape(_item_name(item))}</td>'
-                f'<td align="right" style="padding:10px 0;border-bottom:1px solid #D9D3C7;{MONO}font-size:15px;">'
+                f'<td align="right" style="padding:10px 0;border-bottom:1px solid #D9D3C7;{FIGURE}font-size:15px;">'
                 f"{escape(format_naira(item.line_total_kobo))}</td></tr>"
             )
     return "\n".join(rows)
