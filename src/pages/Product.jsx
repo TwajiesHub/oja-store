@@ -20,22 +20,30 @@ const ADDED_FEEDBACK_MS = 2000
 const LOW_STOCK_LIMIT = 5
 const MORE_FROM_BRAND_COUNT = 4
 
+const DELIVERY_AND_PAYMENT = 'Delivered in 1–3 days in Lagos · Pay with Paystack'
+
 function stockLine(variant) {
+  if (!variant) return `Choose a size · ${DELIVERY_AND_PAYMENT}`
   const status = variant.stock === 0 ? 'Sold out' : variant.stock <= LOW_STOCK_LIMIT ? `Only ${variant.stock} left` : 'In stock'
-  return `${status} · Delivered in 1–3 days in Lagos · Pay with Paystack`
+  return `${status} · ${DELIVERY_AND_PAYMENT}`
 }
 
 function ProductInfo({ product }) {
+  // A clothing size is the shopper's choice, so none is preselected. Other options are.
   const firstInStock = product.variants.find((v) => v.stock > 0) || product.variants[0]
-  const [variantId, setVariantId] = useState(firstInStock.id)
+  const [variantId, setVariantId] = useState(product.needs_size ? null : firstInStock.id)
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
   const [note, setNote] = useState('')
   const { add } = useBag()
 
   const variant = product.variants.find((v) => v.id === variantId)
-  const maxQuantity = Math.min(variant.stock, MAX_QUANTITY)
-  const soldOut = variant.stock === 0
+  const needsSize = !variant
+  // Until a size is chosen the stepper stays at 1 and the add button stays off.
+  const maxQuantity = variant ? Math.min(variant.stock, MAX_QUANTITY) : 1
+  const soldOut = variant ? variant.stock === 0 : product.variants.every((v) => v.stock === 0)
+  const prices = product.variants.map((v) => v.price_kobo)
+  const pricePrefix = !variant && product.price_varies ? 'from ' : ''
 
   useEffect(() => {
     if (!added) return undefined
@@ -58,7 +66,7 @@ function ProductInfo({ product }) {
   }
 
   function addToBag() {
-    const addedCount = add(variant.id, quantity, variant.stock)
+    const addedCount = add(variant.id, quantity, variant.stock, variant.price_kobo)
     setAdded(addedCount > 0)
     if (addedCount === 0) setNote('Your bag already has the most you can buy of this.')
     else if (addedCount < quantity) setNote(`Added ${addedCount}. That is the most you can buy of this.`)
@@ -67,9 +75,11 @@ function ProductInfo({ product }) {
 
   const addLabel = soldOut
     ? 'SOLD OUT'
-    : added
-      ? 'ADDED TO BAG ✓'
-      : `ADD TO BAG · ${formatNaira(variant.price_kobo * quantity)}`
+    : needsSize
+      ? 'CHOOSE A SIZE'
+      : added
+        ? 'ADDED TO BAG ✓'
+        : `ADD TO BAG · ${formatNaira(variant.price_kobo * quantity)}`
 
   return (
     <div className="product-info">
@@ -78,14 +88,16 @@ function ProductInfo({ product }) {
           By {product.brand.name} · {product.brand_full.descriptor} ↗
         </Link>
         <h1 className="display product-info__name">{product.name}</h1>
-        <span className="product-info__price">{formatNaira(variant.price_kobo)}</span>
+        <span className="product-info__price">
+          {pricePrefix}{formatNaira(variant ? variant.price_kobo : Math.min(...prices))}
+        </span>
       </div>
 
       <VariantPicker variants={product.variants} selectedId={variantId} onSelect={pickVariant} />
 
       <div className="product-info__buy">
         {!soldOut && <QuantityStepper value={quantity} max={maxQuantity} onChange={changeQuantity} />}
-        <button type="button" className="product-info__add" disabled={soldOut} onClick={addToBag}>
+        <button type="button" className="product-info__add" disabled={soldOut || needsSize} onClick={addToBag}>
           {addLabel}
         </button>
       </div>

@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 
 import Layout from './components/Layout.jsx'
+import Bag from './pages/Bag.jsx'
 import Brand from './pages/Brand.jsx'
 import Brands from './pages/Brands.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
@@ -23,7 +24,7 @@ export default function App() {
         {/* These arrive in later milestones. */}
         <Route path="edits" element={<Edits />} />
         <Route path="edits/:slug" element={<Edit />} />
-        <Route path="bag" element={<ComingSoon title="Your bag" />} />
+        <Route path="bag" element={<Bag />} />
         <Route path="orders" element={<ComingSoon title="Your orders" />} />
         <Route path="privacy" element={<ComingSoon title="Privacy" />} />
         <Route path="terms" element={<ComingSoon title="Terms" />} />

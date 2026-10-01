@@ -1,7 +1,12 @@
 """Request and response models. Money is always an integer number of kobo."""
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from api.pricing import MAX_QUANTITY
+
+MAX_BAG_LINES = 50
 
 
 class BrandOut(BaseModel):
@@ -78,6 +83,8 @@ class EditTag(BaseModel):
 
 
 class ProductDetail(ProductCard):
+    # True for clothing sizes: the shopper must choose one, so none is preselected.
+    needs_size: bool
     description: str
     details: str
     image_urls: list[str]
@@ -108,3 +115,38 @@ class EditDetail(EditSummary):
     # Only items whose default variant is in stock count towards these.
     available_count: int
     total_kobo: int
+
+
+class BagItemIn(BaseModel):
+    variant_id: int
+    quantity: int = Field(ge=1, le=MAX_QUANTITY)
+
+
+class BagQuoteRequest(BaseModel):
+    # Only ids and quantities are read. Any price in the request body is ignored.
+    items: list[BagItemIn] = Field(max_length=MAX_BAG_LINES)
+
+
+class BagQuoteLine(BaseModel):
+    variant_id: int
+    product_slug: str
+    product_name: str
+    variant_label: str
+    brand: BrandKit
+    unit_price_kobo: int
+    stock: int
+    requested_quantity: int
+    # What can be bought now: the request clamped to stock and the per-variant limit.
+    quantity: int
+    line_total_kobo: int
+    # sold_out: nothing left. reduced: fewer left than requested.
+    issue: Literal["sold_out", "reduced"] | None
+
+
+class BagQuote(BaseModel):
+    lines: list[BagQuoteLine]
+    # Variants that are unknown or no longer sold; the browser drops them.
+    removed_variant_ids: list[int]
+    item_count: int
+    subtotal_kobo: int
+    free_delivery_remaining_kobo: int

@@ -112,8 +112,8 @@ Seeding Supabase (only when I ask): put the **session pooler** string (port 5432
 | M0 | `setup` | Vite + React + FastAPI skeleton deployed; `GET /api/health` reads Supabase on the preview. Tables created and catalogue seeded in Supabase. | Wed night |
 | M1 | `catalogue` | Home, shop (filters), brand pages, product pages from the seeded catalogue, matching `design/`. | Thu morning |
 | M2 | `edits` | Edit pages with curator notes and "Add all to bag". | Thu midday |
-| M3 | `bag` | Guest bag in the browser, bag page, synced to the database once signed in. | Thu afternoon |
-| M4 | `auth` | Google sign-in via Supabase, token verification on the backend, profiles. | Thu evening |
+| M3 | `bag` | Guest bag in the browser, bag page with server-priced quote, delivery rules in `pricing.py`. | Thu afternoon |
+| M4 | `auth` | Google sign-in via Supabase, token verification on the backend, profiles, the server-side bag and merging the guest bag on sign-in. | Thu evening |
 | M5 | `checkout` | Checkout page, order creation, Paystack initialise, callback page states, webhook and verify, stock. | Fri morning |
 | M6 | `email` | Mailgun confirmation email after payment; "Your orders" pages. | Fri midday |
 | M7 | `polish` | Privacy and terms pages, 404, empty and error states, mobile pass, README, brand hero illustrations for Elú, Ivie and Kade. | Fri afternoon |

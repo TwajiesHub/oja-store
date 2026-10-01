@@ -174,7 +174,7 @@ def get_product(slug: str, response: Response, session: Session = Depends(get_se
     variants = active_variants(session, [product.id])[product.id]
     brand = session.get(Brand, product.brand_id)
     return ProductDetail(
-        **cards[0].model_dump(),
+        **cards[0].model_dump(), needs_size=needs_size(variants),
         description=product.description, details=product.details, image_urls=product.image_urls,
         variants=[variant_out(v) for v in variants],
         brand_full=BrandOut.model_validate(brand, from_attributes=True),

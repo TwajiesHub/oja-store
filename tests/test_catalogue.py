@@ -152,6 +152,16 @@ def test_product_detail_has_variants_brand_and_edits(client, seeded):
     assert {e["slug"] for e in body["edits"]} == {"owambe", "harmattan"}
 
 
+def test_product_detail_says_whether_a_size_must_be_chosen(client, seeded):
+    sized = client.get("/api/products/oshodi-hoodie").json()
+    shea = client.get("/api/products/whipped-shea-butter").json()
+    gele = client.get("/api/products/aso-oke-gele").json()
+    cap = client.get("/api/products/molue-cap").json()
+
+    assert sized["needs_size"] is True
+    assert (shea["needs_size"], gele["needs_size"], cap["needs_size"]) == (False, False, False)
+
+
 def test_product_detail_keeps_sold_out_variants(client, seeded):
     body = client.get("/api/products/conductor-jacket").json()
 

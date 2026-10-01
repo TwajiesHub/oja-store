@@ -1,0 +1,228 @@
+/* Bag page. Phone first: lines, then the summary. From 1200px the summary sits beside them. */
+
+.bag-page {
+  padding: 32px var(--page-gutter) 72px;
+}
+
+.bag-page__title {
+  font-size: 44px;
+  margin-bottom: 24px;
+}
+
+.bag-page__notice {
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.bag-page__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.bag-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bag-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.bag-group__lines {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bag-line {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 0;
+}
+
+.bag-line__thumb {
+  display: block;
+  width: 64px;
+  height: 78px;
+  background: var(--stone);
+}
+
+.bag-line__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bag-line__name {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.bag-line__variant {
+  font-size: 14px;
+  color: var(--mute);
+}
+
+.bag-line__note {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.bag-line__note--problem {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.bag-line__ok,
+.bag-line__remove {
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  padding-top: 0;
+  cursor: pointer;
+}
+
+.bag-line__controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.bag-line__controls .quantity-stepper button {
+  width: 40px;
+  height: 44px;
+}
+
+.bag-line__total {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.bag-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px 20px;
+  background: var(--stone);
+}
+
+.bag-summary[aria-busy='true'] {
+  opacity: 0.7;
+}
+
+.bag-summary__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.bag-summary__title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.bag-summary__head .label {
+  color: var(--mute);
+}
+
+.bag-summary__rows {
+  margin: 0;
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.bag-summary__rows div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bag-summary__rows dd {
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+.bag-summary__hint {
+  font-size: 15px;
+}
+
+.bag-summary__fine {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+.bag-summary .button {
+  min-height: 60px;
+}
+
+.bag-summary .button:disabled {
+  background: var(--stone-dark);
+  border-color: var(--stone-dark);
+  color: var(--mute);
+  cursor: not-allowed;
+}
+
+@media (min-width: 768px) {
+  .bag-page {
+    padding-top: 40px;
+  }
+
+  .bag-page__title {
+    font-size: 64px;
+    margin-bottom: 32px;
+  }
+
+  .bag-line {
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+    gap: 20px;
+  }
+
+  .bag-line__thumb {
+    width: 90px;
+    height: 110px;
+  }
+
+  .bag-line__name {
+    font-size: 18px;
+  }
+
+  .bag-line__total {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .bag-page__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 72px;
+    align-items: start;
+  }
+
+  .bag-summary {
+    position: sticky;
+    top: 24px;
+    padding: 36px 40px;
+  }
+}
