@@ -25,7 +25,7 @@ export default function Orders() {
       />
     )
   }
-  if (error) return <ErrorState onRetry={reload} />
+  if (error) return <ErrorState page onRetry={reload} />
   if (loading || !data) return <Loading count={2} />
   if (data.length === 0) {
     return (

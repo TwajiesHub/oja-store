@@ -63,19 +63,28 @@ def plan_reset(session: Session) -> ResetPlan:
 
 
 def apply_reset(session: Session, include_profiles: bool = False) -> None:
-    """Does the reset in one transaction: either all of it happens or none of it."""
-    seed = seed_skus()
-    # Children first, so the foreign keys are never broken.
-    session.exec(delete(PaymentEvent))
-    session.exec(delete(OrderItem))
-    session.exec(delete(Order))
-    session.exec(delete(BagItem))
-    if include_profiles:
-        session.exec(delete(Profile))
-    for variant in session.exec(select(Variant).where(Variant.sku.in_(list(seed)))).all():
-        variant.stock = seed[variant.sku]
-        session.add(variant)
-    session.commit()
+    """Does the whole reset as ONE database transaction: either all of it happens or none of it.
+
+    Nothing here commits until the very last line. Every delete and every stock change is part of
+    the same open transaction, so if anything fails, or the connection drops, part way through,
+    the database rolls the whole thing back and is left exactly as it was.
+    """
+    try:
+        seed = seed_skus()
+        # Children first, so the foreign keys are never broken.
+        session.exec(delete(PaymentEvent))
+        session.exec(delete(OrderItem))
+        session.exec(delete(Order))
+        session.exec(delete(BagItem))
+        if include_profiles:
+            session.exec(delete(Profile))
+        for variant in session.exec(select(Variant).where(Variant.sku.in_(list(seed)))).all():
+            variant.stock = seed[variant.sku]
+            session.add(variant)
+        session.commit()
+    except BaseException:
+        session.rollback()
+        raise
 
 
 def describe(plan: ResetPlan, include_profiles: bool) -> str:

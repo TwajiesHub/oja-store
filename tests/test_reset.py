@@ -82,6 +82,51 @@ def test_apply_removes_orders_events_and_bags_and_resets_stock(with_test_data):
     assert stock_of(with_test_data, "OSHODI-HOODIE-M") == seed_skus()["OSHODI-HOODIE-M"]
 
 
+def test_a_failure_part_way_through_leaves_the_database_exactly_as_it_was(with_test_data, monkeypatch):
+    """The deletes have already run when the stock reset fails: none of it may stick."""
+    orders_before = count(with_test_data, Order)
+    items_before = count(with_test_data, OrderItem)
+    events_before = count(with_test_data, PaymentEvent)
+    bags_before = count(with_test_data, BagItem)
+    stock_before = stock_of(with_test_data, "OSHODI-HOODIE-M")
+
+    class Breaks(dict):
+        def __getitem__(self, key):
+            raise RuntimeError("the connection dropped")
+
+    monkeypatch.setattr("scripts.reset_test_data.seed_skus", lambda: Breaks(seed_skus()))
+
+    with pytest.raises(RuntimeError, match="connection dropped"):
+        apply_reset(with_test_data)
+
+    assert count(with_test_data, Order) == orders_before
+    assert count(with_test_data, OrderItem) == items_before
+    assert count(with_test_data, PaymentEvent) == events_before
+    assert count(with_test_data, BagItem) == bags_before
+    assert stock_of(with_test_data, "OSHODI-HOODIE-M") == stock_before
+
+
+def test_an_interrupted_reset_on_a_second_connection_is_never_seen_half_done(with_test_data, engine, monkeypatch):
+    """Even before the failure is handled, another connection never sees a partly reset database."""
+    from sqlmodel import Session
+
+    seen = {}
+
+    class Breaks(dict):
+        def __getitem__(self, key):
+            # The deletes have run in the reset's transaction. A separate connection must still see everything.
+            with Session(engine) as other:
+                seen["orders"] = other.exec(select(func.count()).select_from(Order)).one()
+            raise RuntimeError("interrupted")
+
+    monkeypatch.setattr("scripts.reset_test_data.seed_skus", lambda: Breaks(seed_skus()))
+
+    with pytest.raises(RuntimeError):
+        apply_reset(with_test_data)
+
+    assert seen["orders"] == 2
+
+
 def test_profiles_are_kept_unless_asked(with_test_data):
     apply_reset(with_test_data)
 

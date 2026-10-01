@@ -75,7 +75,7 @@ export default function Bag() {
       />
     )
   }
-  if (!quote && error) return <ErrorState onRetry={reload} />
+  if (!quote && error) return <ErrorState page onRetry={reload} />
   if (!quote) return <Loading count={2} />
 
   const groups = groupByBrand(quote.lines)

@@ -1,4 +1,5 @@
 import BrandTile from '../components/BrandTile.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import Loading from '../components/Loading.jsx'
 import useApi from '../hooks/useApi.js'
@@ -15,7 +16,10 @@ export default function Brands() {
       </h1>
       {error && <ErrorState onRetry={reload} />}
       {loading && <Loading count={6} />}
-      {data && (
+      {data && data.length === 0 && (
+        <EmptyState text="No brands are listed right now. Check back soon." actionTo="/" actionLabel="Back to the home page" />
+      )}
+      {data && data.length > 0 && (
         <div className="brand-tiles brand-tiles--index">
           {data.map((brand) => <BrandTile key={brand.slug} brand={brand} />)}
         </div>

@@ -117,7 +117,7 @@ export default function Checkout() {
     }
   }
 
-  if (user && !quote && quoteFailed) return <ErrorState onRetry={() => setQuoteTry((n) => n + 1)} />
+  if (user && !quote && quoteFailed) return <ErrorState page onRetry={() => setQuoteTry((n) => n + 1)} />
   if (authLoading || (user && !quote)) return <Loading count={1} />
 
   const bag = user ? quote?.bag : guestQuote.quote
