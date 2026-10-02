@@ -37,6 +37,7 @@ def seed_skus() -> dict[str, int]:
 PHOTO_DIR = "/images/products"
 PHOTOS = {
     "oshodi-hoodie": "Black pullover hoodie with two thin reflective stripes across the chest, laid flat on a yellow background.",
+    "night-bus-windbreaker": "Black zip-up windbreaker, open over a black t-shirt, with a wide reflective grey band around each sleeve, against a bright yellow background.",
     "olokun-wrap-dress": "Long indigo wrap dress with three-quarter sleeves and a side tie, printed with white concentric-circle adire patterns, on a dress form against a warm plaster wall.",
     "aso-oke-gele": "Folded wine-red aso-oke cloth with fine gold stripes, one length draped over the stack, on a natural linen background.",
     "kano-leather-clutch": "Tan leather envelope clutch with a flap tooled in a geometric pattern of diamonds and triangles, against a terracotta background.",
@@ -46,8 +47,6 @@ PHOTOS = {
     "shea-lip-balm": "Open round silver tin of pale cream balm with its lid resting against the side, on warm sand-coloured paper.",
     "whipped-shea-butter": "Amber glass jar of whipped shea butter with its cream lid leaning beside it, a wooden spoon holding a scoop and two shea nuts, on a warm tan background.",
 }
-# night-bus-windbreaker.webp is made but not linked: the photo shows a third-party brand logo and
-# other garments. Add it above, with an alt text, once it is replaced or approved.
 
 CATEGORIES = [
     ("clothing", "Clothing"),
