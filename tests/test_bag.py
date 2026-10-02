@@ -142,3 +142,12 @@ def test_quote_rejects_a_bag_with_too_many_lines(client, seeded):
     items = [{"variant_id": i, "quantity": 1} for i in range(1, 52)]
 
     assert quote(client, items).status_code == 422
+
+
+def test_quote_lines_carry_the_product_photo(client, seeded):
+    hoodie = variant_id(seeded, "OSHODI-HOODIE-M")
+    cap = seeded.exec(select(Variant).join(Product).where(Product.slug == "molue-cap")).first().id
+
+    lines = quote(client, [{"variant_id": hoodie, "quantity": 1}, {"variant_id": cap, "quantity": 1}]).json()["lines"]
+
+    assert [line["image_url"] for line in lines] == ["/images/products/oshodi-hoodie.webp", None]

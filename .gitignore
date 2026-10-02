@@ -15,6 +15,9 @@ __pycache__/
 node_modules/
 dist/
 
+# The full-size AI photos the WebP files are made from. Kept locally, not in the repo.
+design/photo-originals/
+
 # Vercel
 .vercel/
 

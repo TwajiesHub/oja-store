@@ -58,6 +58,7 @@ class ProductCard(BaseModel):
     # True when variants have different prices, so the card shows "from".
     price_varies: bool
     image_url: str | None
+    image_alt: str
     in_stock: bool
     variant_labels: list[str]
     created_at: datetime
@@ -136,6 +137,8 @@ class BagQuoteLine(BaseModel):
     brand: BrandKit
     unit_price_kobo: int
     stock: int
+    # The product photo (card size), if there is one.
+    image_url: str | None
     requested_quantity: int
     # What can be bought now: the request clamped to stock and the per-variant limit.
     quantity: int

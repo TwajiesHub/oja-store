@@ -13,7 +13,9 @@ export default function BagLine({ line, notes, onQuantity, onRemove, onAcceptPri
 
   return (
     <li className="bag-line">
-      <Link to={url} className="bag-line__thumb" aria-hidden="true" tabIndex={-1} />
+      <Link to={url} className="bag-line__thumb" aria-hidden="true" tabIndex={-1}>
+        {line.image_url && <img src={line.image_url} alt="" width="64" height="79" loading="lazy" decoding="async" />}
+      </Link>
       <div className="bag-line__body">
         <Link to={url} className="bag-line__name">{line.product_name}</Link>
         <span className="bag-line__variant">

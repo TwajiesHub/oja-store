@@ -57,6 +57,13 @@
   background: var(--stone);
 }
 
+.bag-line__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .bag-line__body {
   display: flex;
   flex-direction: column;

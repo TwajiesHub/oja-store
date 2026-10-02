@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom'
 
+import { CARD_HEIGHT, CARD_WIDTH } from '../lib/images.js'
 import { formatNaira } from '../lib/money.js'
 import { variantSummary } from '../lib/variants.js'
+import BrandChip from './BrandChip.jsx'
 import Placeholder from './Placeholder.jsx'
 
 export default function ProductCard({ product, showBrand = true }) {
@@ -12,7 +14,17 @@ export default function ProductCard({ product, showBrand = true }) {
     <Link to={`/products/${product.slug}`} className="product-card">
       <div className="product-card__image">
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} loading="lazy" />
+          <>
+            <img
+              src={product.image_url}
+              alt={product.image_alt || product.name}
+              width={CARD_WIDTH}
+              height={CARD_HEIGHT}
+              loading="lazy"
+              decoding="async"
+            />
+            {showBrand && <BrandChip brand={product.brand} />}
+          </>
         ) : (
           <Placeholder brand={product.brand} name={product.name} showBrand={showBrand} />
         )}

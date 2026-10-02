@@ -126,7 +126,7 @@ User ids are Supabase auth user ids (UUID strings).
 | --- | --- |
 | `brands` | id, slug (unique), name, tagline, descriptor, slogan, story, city, accent, accent_text, type_pairing (`condensed`, `serif`, `soft-serif`, `didone`, `display-serif`, `grotesk`), hero_image_url (nullable), sort_order, is_active |
 | `categories` | id, slug (unique), name, sort_order |
-| `products` | id, slug (unique), brand_id, category_id, name, description, details, image_urls (JSON list), is_featured, is_active, created_at |
+| `products` | id, slug (unique), brand_id, category_id, name, description, details, image_urls (JSON list: the 800px card photo, e.g. `/images/products/<slug>.webp`; the product page uses `<slug>-large.webp`), image_alt, is_featured, is_active, created_at |
 | `variants` | id, product_id, label, sku (unique), price_kobo, stock (≥ 0), sort_order, is_active |
 | `edits` | id, slug (unique), title, kicker, intro, accent, accent_text, sort_order, is_active |
 | `edit_items` | id, edit_id, product_id, variant_id (default for "Add all"), position, note |

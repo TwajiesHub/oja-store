@@ -141,6 +141,13 @@
   background: var(--stone);
 }
 
+.edit-item__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .edit-item__body {
   flex: 1;
   display: flex;
