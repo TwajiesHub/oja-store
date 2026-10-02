@@ -191,6 +191,19 @@ Known limits: delivery dates count working days (Monday to Friday) and do not sk
 receipts only reach authorized addresses while the shop is on Mailgun's sandbox; and an order that is
 started but never paid stays as an unpaid order that is never listed and never touches stock.
 
+## After submission
+
+Not part of the deadline work, but worth doing next:
+
+- **Unique Paystack references per environment, plus a metadata check in the webhook.** Paystack
+  sends webhooks for the whole account to the production URL, so a payment started on localhost or
+  a preview can reach production, where it only matches by luck if both use the same order number
+  (for example `OJA-10001-1`). That happened once in testing: a stale event was correctly ignored
+  because the amount and attempt did not match, but it should never rely on that. Add an
+  environment prefix to the reference (such as `prod-OJA-10482-1`) and send `metadata` with the
+  order number and environment on initialise, then have the webhook ignore any event whose
+  metadata does not name this environment.
+
 ## How AI was used
 
 _This section is a factual draft, to be rewritten in the project owner's own words._
