@@ -29,7 +29,7 @@ export function SunHaze() {
 
 export function DanfoBus() {
   return (
-    <svg className="brand-hero__bus" viewBox="0 0 640 320" role="img" aria-label="Illustration of a yellow Lagos danfo bus">
+    <svg className="brand-hero__art" viewBox="0 0 640 320" role="img" aria-label="Illustration of a yellow Lagos danfo bus">
       <ellipse cx="320" cy="292" rx="300" ry="10" fill="#111110" opacity="0.25" />
       <path d="M40 252 L40 112 Q40 78 74 78 L468 78 Q498 78 520 100 L592 172 Q606 186 606 206 L606 252 Z" fill="#F2B705" stroke="#111110" strokeWidth="5" />
       <rect x="58" y="50" width="170" height="30" fill="#111110" />
@@ -67,6 +67,91 @@ export function SunHazeWide() {
       <circle cx="210" cy="210" r="200" fill="#EBC486" />
       <circle cx="210" cy="210" r="150" fill="#F2D6A6" />
       <circle cx="210" cy="210" r="100" fill="#F7E6C6" />
+    </svg>
+  )
+}
+
+// Elú: a length of hand-dyed adire cloth, with the resist-dyed rings and diamonds it is known for.
+export function AdireCloth() {
+  return (
+    <svg className="brand-hero__art" viewBox="0 0 640 320" role="img" aria-label="Illustration of a length of indigo adire cloth">
+      <defs>
+        <pattern id="adire-motif" width="80" height="80" patternUnits="userSpaceOnUse">
+          <circle cx="40" cy="40" r="26" fill="none" stroke="#F4EFE4" strokeWidth="3" />
+          <circle cx="40" cy="40" r="15" fill="none" stroke="#F4EFE4" strokeWidth="3" />
+          <circle cx="40" cy="40" r="5" fill="#F4EFE4" />
+          <path d="M0 0 L8 8 M80 0 L72 8 M0 80 L8 72 M80 80 L72 72" stroke="#F4EFE4" strokeWidth="3" strokeLinecap="round" />
+          <path d="M40 0 L46 6 L40 12 L34 6 Z M40 80 L46 74 L40 68 L34 74 Z" fill="#F4EFE4" />
+        </pattern>
+      </defs>
+      <ellipse cx="320" cy="298" rx="270" ry="9" fill="#F4EFE4" opacity="0.18" />
+      <path
+        d="M44 44 Q182 18 320 44 T596 44 L596 262 Q458 288 320 262 T44 262 Z"
+        fill="#2D4079"
+        stroke="#F4EFE4"
+        strokeWidth="5"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M44 44 Q182 18 320 44 T596 44 L596 262 Q458 288 320 262 T44 262 Z"
+        fill="url(#adire-motif)"
+        opacity="0.9"
+      />
+      <path d="M200 38 Q212 150 196 268 M420 40 Q408 150 424 268" fill="none" stroke="#1E2B55" strokeWidth="14" opacity="0.35" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+// Ivie: a strand of coral beads with brass clasps, above a pair of brass hoops with coral tips.
+const STRAND = Array.from({ length: 17 }, (_, i) => {
+  const x = 60 + i * 32.5
+  return { x, y: 52 + ((x - 320) / 260) ** 2 * 120, r: i % 4 === 2 ? 13 : 10 }
+})
+
+export function CoralAndBrass() {
+  return (
+    <svg className="brand-hero__art" viewBox="0 0 640 320" role="img" aria-label="Illustration of a coral bead necklace and brass hoop earrings">
+      {STRAND.map(({ x, y, r }) => (
+        <g key={x}>
+          <circle cx={x} cy={y} r={r} fill="#C8452F" />
+          <circle cx={x - r * 0.3} cy={y - r * 0.3} r={r * 0.28} fill="#E27A5E" />
+        </g>
+      ))}
+      {[4, 12].map((i) => (
+        <rect key={i} x={STRAND[i].x - 5} y={STRAND[i].y - 12} width="10" height="24" rx="3" fill="#C9A24A" transform={`rotate(${i === 4 ? -24 : 24} ${STRAND[i].x} ${STRAND[i].y})`} />
+      ))}
+      {[236, 404].map((cx) => (
+        <g key={cx}>
+          <circle cx={cx} cy="236" r="44" fill="none" stroke="#C9A24A" strokeWidth="8" />
+          <circle cx={cx} cy="236" r="44" fill="none" stroke="#E6C878" strokeWidth="2" strokeDasharray="6 18" opacity="0.8" />
+          <circle cx={cx} cy="284" r="13" fill="#C8452F" />
+          <circle cx={cx - 4} cy="280" r="4" fill="#E27A5E" />
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+// kade: two jars of whipped shea butter, a large and a small, in the brand's amber and cream.
+function SheaJar({ x, y, scale }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      <ellipse cx="150" cy="346" rx="118" ry="9" fill="#241A13" opacity="0.18" />
+      <rect x="48" y="100" width="204" height="240" rx="26" fill="#9C5B1F" stroke="#241A13" strokeWidth="3" />
+      <rect x="66" y="118" width="15" height="196" rx="7" fill="#C58A4A" />
+      <rect x="48" y="172" width="204" height="108" fill="#F3EADB" stroke="#241A13" strokeWidth="3" />
+      <text x="150" y="226" textAnchor="middle" fill="#241A13" fontFamily="Fraunces, serif" fontSize="40">kade</text>
+      <text x="150" y="252" textAnchor="middle" fill="#241A13" fontFamily="JetBrains Mono, monospace" fontSize="11" letterSpacing="2">WHIPPED SHEA</text>
+      <rect x="58" y="40" width="184" height="64" rx="10" fill="#F3EADB" stroke="#241A13" strokeWidth="3" />
+    </g>
+  )
+}
+
+export function SheaJars() {
+  return (
+    <svg className="brand-hero__art" viewBox="0 0 640 360" role="img" aria-label="Illustration of two jars of kade whipped shea butter">
+      <SheaJar x={40} y={96} scale={0.64} />
+      <SheaJar x={230} y={0} scale={1} />
     </svg>
   )
 }

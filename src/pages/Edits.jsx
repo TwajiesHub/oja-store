@@ -1,4 +1,5 @@
 import EditTile from '../components/EditTile.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import Loading from '../components/Loading.jsx'
 import useApi from '../hooks/useApi.js'
@@ -16,7 +17,10 @@ export default function Edits() {
       <p className="listing__lead">Themed selections that tell a story across brands.</p>
       {error && <ErrorState onRetry={reload} />}
       {loading && <Loading count={2} />}
-      {data && (
+      {data && data.length === 0 && (
+        <EmptyState text="No edits are live right now. Check back soon." actionTo="/shop" actionLabel="Shop all" />
+      )}
+      {data && data.length > 0 && (
         <div className="edit-tiles">
           {data.map((edit, index) => <EditTile key={edit.slug} edit={edit} number={index + 1} />)}
         </div>

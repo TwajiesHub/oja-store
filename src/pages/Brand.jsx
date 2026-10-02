@@ -1,9 +1,10 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 
 import BrandTile from '../components/BrandTile.jsx'
+import EmptyState from '../components/EmptyState.jsx'
 import ErrorState from '../components/ErrorState.jsx'
 import FilterBar from '../components/FilterBar.jsx'
-import { DanfoBus } from '../components/Illustrations.jsx'
+import { AdireCloth, CoralAndBrass, DanfoBus, SheaJars } from '../components/Illustrations.jsx'
 import Loading from '../components/Loading.jsx'
 import ProductCard from '../components/ProductCard.jsx'
 import useApi from '../hooks/useApi.js'
@@ -13,17 +14,23 @@ import NotFound from './NotFound.jsx'
 
 const PAGE_DARK = '#111110'
 
+// Brands with a drawing in their hero. Brands without one simply show the colour block and name.
+const HERO_ART = { danfo: DanfoBus, elu: AdireCloth, ivie: CoralAndBrass, kade: SheaJars }
+
 function BrandHero({ brand }) {
+  const Art = HERO_ART[brand.slug]
+  const striped = brand.slug === 'danfo'
+  const classes = ['brand-hero', striped && 'brand-hero--striped', isLightKit(brand) && 'brand-hero--light']
   return (
-    <section className="brand-hero" style={kitStyle(brand)}>
+    <section className={classes.filter(Boolean).join(' ')} style={kitStyle(brand)}>
       <div className="brand-hero__text">
         <span className="label">{brand.descriptor} · {brand.city} · On Ọjà since 2026</span>
         <h1 className={`brand-hero__name kit-${brand.type_pairing}`}>{brand.name}</h1>
         <p className="brand-hero__tagline">{brand.tagline}</p>
       </div>
-      {brand.slug === 'danfo' && (
+      {Art && <Art />}
+      {striped && (
         <>
-          <DanfoBus />
           <span className="brand-hero__stripe brand-hero__stripe--upper" />
           <span className="brand-hero__stripe brand-hero__stripe--lower" />
         </>
@@ -79,7 +86,7 @@ export default function Brand() {
 
   if (brandRequest.error?.status === 404) return <NotFound />
   const failed = [brandRequest, brands, products].find((r) => r.error)
-  if (failed) return <ErrorState onRetry={failed.reload} />
+  if (failed) return <ErrorState page onRetry={failed.reload} />
   if (!brand) return <Loading count={4} />
 
   // Chips are only worth showing when the brand sells in more than one category.
@@ -106,7 +113,14 @@ export default function Brand() {
       />
 
       {products.loading && <Loading count={8} />}
-      {products.data && (
+      {products.data && products.data.length === 0 && (
+        <EmptyState
+          text={category ? 'Nothing in that category right now.' : `Nothing from ${brand.name} is for sale right now.`}
+          actionTo="/shop"
+          actionLabel="Shop all"
+        />
+      )}
+      {products.data && products.data.length > 0 && (
         <div className="product-grid product-grid--four brand-page__grid">
           {products.data.map((product) => <ProductCard key={product.slug} product={product} showBrand={false} />)}
         </div>

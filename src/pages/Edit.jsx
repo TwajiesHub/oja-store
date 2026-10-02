@@ -97,6 +97,8 @@ function EditView({ edit, number, next }) {
 
       <EditHero edit={edit} number={number} />
 
+      {edit.items.length === 0 && <p className="edit-page__message">No pieces in this edit are for sale right now.</p>}
+
       <section className="edit-items">
         {edit.items.map((item) => (
           <EditItem
@@ -147,7 +149,7 @@ export default function Edit() {
 
   if (edit.error?.status === 404) return <NotFound />
   const failed = [edit, edits].find((r) => r.error)
-  if (failed) return <ErrorState onRetry={failed.reload} />
+  if (failed) return <ErrorState page onRetry={failed.reload} />
   if (!edit.data || !edits.data) return <Loading count={1} />
 
   const index = edits.data.findIndex((e) => e.slug === slug)

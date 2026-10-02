@@ -279,6 +279,8 @@ most mail clients.
   Static files are served before rewrites, so the second rule only catches SPA routes.
 - Previews and production share the Supabase database. Don't seed or test
   destructively on previews.
+- FastAPI's interactive pages (`/docs`, `/redoc`, `/openapi.json`) are switched off on Vercel
+  (`create_app(public_docs=False)` when `VERCEL` is set) and on locally.
 - Paystack's webhook URL points at production only. Previews and localhost rely
   on the verify call, which works everywhere.
 

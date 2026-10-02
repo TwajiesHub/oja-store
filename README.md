@@ -168,7 +168,9 @@ python -m scripts.reset_test_data --supabase --apply    # do it on the live data
 
 It removes every order and its items, the payment events and the saved bags, and puts the stock of
 every catalogue variant back to its seed value. It keeps the catalogue and the saved profiles
-(add `--profiles` to remove those too). Only run it on the live database when you mean to.
+(add `--profiles` to remove those too). The whole reset runs as **one database transaction**, so if
+it is interrupted part way (an error, a dropped connection) nothing is changed. Only run it on the
+live database when you mean to.
 
 ## What is not included
 

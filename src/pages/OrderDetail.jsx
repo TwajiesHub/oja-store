@@ -32,7 +32,7 @@ export default function OrderDetail() {
     return <SignInPrompt title="Sign in to see this order." text="Orders belong to the account that paid for them." returnPath={`/orders/${number}`} />
   }
   if (error?.status === 404 || error?.status === 403) return <NotFound />
-  if (error) return <ErrorState onRetry={reload} />
+  if (error) return <ErrorState page onRetry={reload} />
   if (loading || !order) return <Loading count={1} />
 
   const paid = order.status === 'paid'

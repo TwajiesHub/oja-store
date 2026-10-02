@@ -18,7 +18,7 @@
   overflow: hidden;
   margin: 0 var(--page-gutter);
   min-height: 420px;
-  padding: 28px 20px 72px;
+  padding: 28px 20px 36px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -47,7 +47,17 @@
   line-height: 1.5;
 }
 
-.brand-hero__bus {
+/* Danfo's bus rides above two road stripes, so it needs room for them. */
+.brand-hero--striped {
+  padding-bottom: 72px;
+}
+
+/* A light brand colour (kade's cream) would dissolve into the page without an edge. */
+.brand-hero--light {
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.brand-hero__art {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -78,10 +88,14 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 44px 48px 88px;
+    padding: 44px 48px 56px;
   }
 
-  .brand-hero__bus {
+  .brand-hero--striped {
+    padding-bottom: 88px;
+  }
+
+  .brand-hero__art {
     width: 520px;
     align-self: flex-end;
   }

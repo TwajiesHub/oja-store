@@ -191,6 +191,11 @@
   font-size: clamp(26px, 8.6vw, 34px);
 }
 
+.home-section__empty {
+  font-size: 17px;
+  color: #3b3833;
+}
+
 .home-section--edits {
   gap: 10px;
   padding-top: 0;

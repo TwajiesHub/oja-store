@@ -95,7 +95,7 @@ export default function Home() {
 
   const requests = [brands, edits, featured, products]
   if (requests.some((r) => r.error)) {
-    return <ErrorState onRetry={() => requests.forEach((r) => r.error && r.reload())} />
+    return <ErrorState page onRetry={() => requests.forEach((r) => r.error && r.reload())} />
   }
   const loading = requests.some((r) => r.loading)
 
@@ -110,6 +110,7 @@ export default function Home() {
           </h2>
           <Link to="/brands" className="label text-link only-desktop">All brands ↗</Link>
         </div>
+        {!loading && brands.data.length === 0 && <p className="home-section__empty">The brands are being added. Check back soon.</p>}
         {loading ? <Loading count={6} /> : (
           <div className="brand-tiles">
             {brands.data.map((brand) => <BrandTile key={brand.slug} brand={brand} />)}

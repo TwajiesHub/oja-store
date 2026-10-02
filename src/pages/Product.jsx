@@ -147,7 +147,7 @@ export default function Product() {
   usePageTitle(product.data?.name)
 
   if (product.error?.status === 404) return <NotFound />
-  if (product.error) return <ErrorState onRetry={product.reload} />
+  if (product.error) return <ErrorState page onRetry={product.reload} />
   if (!product.data) return <Loading count={1} />
 
   const data = product.data

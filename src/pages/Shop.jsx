@@ -31,6 +31,7 @@ export default function Shop() {
     setParams(next, { replace: true })
   }
 
+  const filtered = Boolean(category || brand)
   const failed = [categories, brands, products].find((r) => r.error)
   const heading = (
     <h1 className="display listing__title">
@@ -52,7 +53,11 @@ export default function Shop() {
       {failed && <ErrorState onRetry={failed.reload} />}
       {!failed && products.loading && <Loading count={8} />}
       {products.data && products.data.length === 0 && (
-        <EmptyState text="Nothing matches those filters yet." actionTo="/shop" actionLabel="Clear filters" />
+        filtered ? (
+          <EmptyState text="Nothing matches those filters yet." actionTo="/shop" actionLabel="Clear filters" />
+        ) : (
+          <EmptyState text="Nothing is for sale right now. Check back soon." actionTo="/brands" actionLabel="See the brands" />
+        )
       )}
       {products.data && products.data.length > 0 && (
         <>
