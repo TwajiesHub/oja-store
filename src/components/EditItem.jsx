@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+import { CARD_WIDTH, LARGE_HEIGHT, LARGE_WIDTH, largeImage } from '../lib/images.js'
 import { formatNaira } from '../lib/money.js'
 import { editItemTitle, variantSummary } from '../lib/variants.js'
 import BrandChip from './BrandChip.jsx'
@@ -18,7 +19,20 @@ export default function EditItem({ item, chosenId, onChoose, justAdded, onAdd })
   return (
     <article className="edit-item">
       <Link to={`/products/${product.slug}`} className="edit-item__image" aria-label={`View ${title}`}>
-        <Placeholder brand={product.brand} name={title} showBrand={false} />
+        {product.image_url ? (
+          <img
+            src={largeImage(product.image_url)}
+            srcSet={`${product.image_url} ${CARD_WIDTH}w, ${largeImage(product.image_url)} ${LARGE_WIDTH}w`}
+            sizes="(min-width: 768px) 45vw, 100vw"
+            alt={product.image_alt || title}
+            width={LARGE_WIDTH}
+            height={LARGE_HEIGHT}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <Placeholder brand={product.brand} name={title} showBrand={false} />
+        )}
       </Link>
       <div className="edit-item__body">
         <span className="edit-item__number label">{String(item.position).padStart(2, '0')}</span>

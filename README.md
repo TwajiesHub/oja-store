@@ -170,6 +170,14 @@ It removes every order and its items, the payment events and the saved bags, and
 every catalogue variant back to its seed value. It keeps the catalogue and the saved profiles
 (add `--profiles` to remove those too). Only run it on the live database when you mean to.
 
+## Images
+
+The product photos and the home page cover-story photo are **AI-generated**. They are not photographs
+of real products or real people. They are served from `public/images/products/` as WebP, in two
+sizes each (800px wide for cards and bag lines, about 930px wide for product pages), and each
+product has descriptive alt text in the seed data. Products without a photo yet show a placeholder
+with the brand's name. The full-size originals are not kept in the repo.
+
 ## What is not included
 
 Out of scope for this deadline: brands managing their own products, payouts to brands, an admin

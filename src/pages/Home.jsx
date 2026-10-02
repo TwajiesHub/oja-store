@@ -72,9 +72,16 @@ function Hero() {
       <div className="cover-story">
         <span className="cover-story__label label">Cover story</span>
         <span className="cover-story__number label only-desktop">N° 01</span>
-        <span className="cover-story__photo">
-          Photo to come: a model in the Elú Olokun wrap dress, Ivie coral choker and Kofa clutch
-        </span>
+        <img
+          className="cover-story__image"
+          src="/images/products/cover-story-large.webp"
+          srcSet="/images/products/cover-story.webp 800w, /images/products/cover-story-large.webp 928w"
+          sizes="(min-width: 1200px) 33vw, 100vw"
+          alt="A woman in an indigo adire wrap dress, a coral bead necklace and a tooled tan leather clutch, walking down a busy market street under bright umbrellas in late-afternoon light."
+          width="928"
+          height="1152"
+          decoding="async"
+        />
         <span className="cover-story__caption editorial">
           Wearing Elú,
           <br />

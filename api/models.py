@@ -78,7 +78,11 @@ class Product(SQLModel, table=True):
     name: str
     description: str
     details: str = ""
+    # Photo paths on this site, e.g. /images/products/oshodi-hoodie.webp (the 800px card size).
+    # The product page uses the same name with -large before .webp. Empty: show the placeholder.
     image_urls: list[str] = Field(default_factory=list, sa_column=Column(JSON, nullable=False))
+    # What the photo shows, for people who cannot see it.
+    image_alt: str = ""
     is_featured: bool = False
     is_active: bool = True
     created_at: datetime = timestamp_field()

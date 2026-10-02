@@ -70,6 +70,7 @@ def build_cards(session: Session, products: list[Product]) -> list[ProductCard]:
             category=CategoryOut(id=category.id, slug=category.slug, name=category.name),
             from_price_kobo=min(prices), price_varies=len(set(prices)) > 1,
             image_url=product.image_urls[0] if product.image_urls else None,
+            image_alt=product.image_alt,
             in_stock=any(v.stock > 0 for v in product_variants),
             variant_labels=[v.label for v in product_variants],
             created_at=product.created_at,

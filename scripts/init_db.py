@@ -15,7 +15,7 @@ from sqlmodel import Session, SQLModel, select
 from api import config
 from api.db import make_engine
 from api.models import Brand, Category, Edit, EditItem, Product, Variant
-from scripts.seed_data import BRANDS, CATEGORIES, EDITS, KOBO_PER_NAIRA, PRODUCTS, seed_stock, slugify
+from scripts.seed_data import BRANDS, CATEGORIES, EDITS, KOBO_PER_NAIRA, PHOTO_DIR, PHOTOS, PRODUCTS, seed_stock, slugify
 
 
 def load_dotenv_for_local_use() -> None:
@@ -26,7 +26,7 @@ def load_dotenv_for_local_use() -> None:
 
 
 # Columns added after M0. create_all never alters an existing table, so add them here.
-ADDED_COLUMNS = [("brands", "descriptor"), ("brands", "slogan"), ("edits", "kicker")]
+ADDED_COLUMNS = [("brands", "descriptor"), ("brands", "slogan"), ("edits", "kicker"), ("products", "image_alt")]
 
 
 def add_missing_columns(engine) -> None:
@@ -80,6 +80,8 @@ def seed_products(session: Session, brands: dict, categories: dict) -> dict[tupl
         product = upsert(session, Product, {"slug": slug}, {
             "brand_id": brands[brand_slug].id, "category_id": categories[category_slug].id,
             "name": name, "description": description, "details": details, "is_featured": featured,
+            "image_urls": [f"{PHOTO_DIR}/{slug}.webp"] if slug in PHOTOS else [],
+            "image_alt": PHOTOS.get(slug, ""),
         })
         rows = []
         for order, (label, price_naira) in enumerate(variants):

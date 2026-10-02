@@ -51,7 +51,8 @@ def quote_items(session: Session, requested: dict[int, int]) -> BagQuote:
         lines.append(BagQuoteLine(
             variant_id=variant.id, product_slug=product.slug, product_name=product.name,
             variant_label=variant.label, brand=brand_kit(brand), unit_price_kobo=variant.price_kobo,
-            stock=variant.stock, requested_quantity=wanted, quantity=allowed,
+            stock=variant.stock, image_url=product.image_urls[0] if product.image_urls else None,
+            requested_quantity=wanted, quantity=allowed,
             line_total_kobo=variant.price_kobo * allowed, issue=issue,
         ))
 

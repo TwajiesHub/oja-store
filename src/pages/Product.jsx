@@ -12,6 +12,7 @@ import useApi from '../hooks/useApi.js'
 import useBag from '../hooks/useBag.js'
 import usePageTitle from '../hooks/usePageTitle.js'
 import { kitStyle } from '../lib/brandKit.js'
+import { CARD_WIDTH, LARGE_HEIGHT, LARGE_WIDTH, largeImage } from '../lib/images.js'
 import { formatNaira } from '../lib/money.js'
 import NotFound from './NotFound.jsx'
 
@@ -155,7 +156,19 @@ export default function Product() {
   return (
     <div className="product-page">
       <div className="product-page__image">
-        <Placeholder brand={data.brand} name={data.name} showBrand={false} />
+        {data.image_urls.length > 0 ? (
+          <img
+            src={largeImage(data.image_urls[0])}
+            srcSet={`${data.image_urls[0]} ${CARD_WIDTH}w, ${largeImage(data.image_urls[0])} ${LARGE_WIDTH}w`}
+            sizes="(min-width: 768px) 58vw, 100vw"
+            alt={data.image_alt || data.name}
+            width={LARGE_WIDTH}
+            height={LARGE_HEIGHT}
+            decoding="async"
+          />
+        ) : (
+          <Placeholder brand={data.brand} name={data.name} showBrand={false} />
+        )}
         <Link to={`/brands/${data.brand.slug}`} className="product-page__chip" aria-label={`${data.brand.name} brand page`}>
           <BrandChip brand={data.brand} />
         </Link>

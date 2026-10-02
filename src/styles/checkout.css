@@ -386,6 +386,13 @@
   background: var(--stone-dark);
 }
 
+.checkout-summary__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .checkout-summary__what {
   display: flex;
   flex-direction: column;

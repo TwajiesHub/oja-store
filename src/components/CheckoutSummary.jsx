@@ -34,7 +34,9 @@ export default function CheckoutSummary({ bag, deliveryKobo, totalKobo, hint }) 
           <ul>
             {lines.map((line) => (
               <li key={line.variant_id} className="checkout-summary__line">
-                <span className="checkout-summary__thumb" aria-hidden="true" />
+                <span className="checkout-summary__thumb" aria-hidden="true">
+                  {line.image_url && <img src={line.image_url} alt="" width="64" height="79" loading="lazy" decoding="async" />}
+                </span>
                 <span className="checkout-summary__what">
                   <strong>{line.product_name}</strong>
                   <span>{line.variant_label} · Qty {line.quantity}</span>

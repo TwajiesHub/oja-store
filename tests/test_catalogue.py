@@ -127,7 +127,8 @@ def test_product_card_shows_from_price_and_variant_labels(client, seeded):
     assert shea["price_varies"] is True
     assert shea["variant_labels"] == ["100 ml", "250 ml"]
     assert shea["in_stock"] is True
-    assert shea["image_url"] is None
+    assert shea["image_url"] == "/images/products/whipped-shea-butter.webp"
+    assert "shea" in shea["image_alt"].lower()
 
 
 def test_product_card_not_in_stock_when_every_variant_sold_out(client, seeded):
@@ -285,3 +286,29 @@ def test_edit_detail_404_for_inactive_edit(client, seeded):
     seeded.commit()
 
     assert client.get("/api/edits/owambe").status_code == 404
+
+
+def test_product_without_a_photo_has_no_image_and_no_alt_text(client, seeded):
+    cap = next(p for p in client.get("/api/products").json() if p["slug"] == "molue-cap")
+
+    assert cap["image_url"] is None
+    assert cap["image_alt"] == ""
+
+
+def test_product_detail_returns_the_photo_and_its_alt_text(client, seeded):
+    body = client.get("/api/products/oshodi-hoodie").json()
+
+    assert body["image_urls"] == ["/images/products/oshodi-hoodie.webp"]
+    assert body["image_alt"]
+
+
+def test_every_seeded_photo_has_both_sizes_on_disk():
+    from pathlib import Path
+
+    from scripts.seed_data import PHOTO_DIR, PHOTOS
+
+    folder = Path(__file__).resolve().parent.parent / "public" / PHOTO_DIR.lstrip("/")
+    for slug, alt in PHOTOS.items():
+        assert (folder / f"{slug}.webp").is_file(), slug
+        assert (folder / f"{slug}-large.webp").is_file(), slug
+        assert len(alt) > 30, slug

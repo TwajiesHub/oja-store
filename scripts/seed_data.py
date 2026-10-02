@@ -31,6 +31,24 @@ def seed_skus() -> dict[str, int]:
     }
 
 
+# Product photos, by product slug, with what each one shows (the alt text). The files are
+# public/images/products/<slug>.webp (800px, for cards) and <slug>-large.webp (the product page).
+# The photos are AI-generated. A product that is not listed here keeps the brand-chip placeholder.
+PHOTO_DIR = "/images/products"
+PHOTOS = {
+    "oshodi-hoodie": "Black pullover hoodie with two thin reflective stripes across the chest, laid flat on a yellow background.",
+    "olokun-wrap-dress": "Long indigo wrap dress with three-quarter sleeves and a side tie, printed with white concentric-circle adire patterns, on a dress form against a warm plaster wall.",
+    "aso-oke-gele": "Folded wine-red aso-oke cloth with fine gold stripes, one length draped over the stack, on a natural linen background.",
+    "kano-leather-clutch": "Tan leather envelope clutch with a flap tooled in a geometric pattern of diamonds and triangles, against a terracotta background.",
+    "coral-drop-earrings": "A pair of gold-tone stud earrings, each with a round coral-red bead hanging below, on black velvet.",
+    "single-strand-coral-choker": "A single strand of round coral-red beads with a gold clasp, coiled on black velvet.",
+    "shea-and-baobab-oil": "Amber glass dropper bottle with a drop of golden oil falling from the lifted dropper, beside a rounded grey-brown pod, on a warm peach background.",
+    "shea-lip-balm": "Open round silver tin of pale cream balm with its lid resting against the side, on warm sand-coloured paper.",
+    "whipped-shea-butter": "Amber glass jar of whipped shea butter with its cream lid leaning beside it, a wooden spoon holding a scoop and two shea nuts, on a warm tan background.",
+}
+# night-bus-windbreaker.webp is made but not linked: the photo shows a third-party brand logo and
+# other garments. Add it above, with an alt text, once it is replaced or approved.
+
 CATEGORIES = [
     ("clothing", "Clothing"),
     ("beauty", "Beauty"),
