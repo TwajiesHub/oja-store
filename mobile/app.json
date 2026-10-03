@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Ọjà",
+    "slug": "oja",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "oja",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F4F1EA",
+    "android": {
+      "package": "com.twajieshub.oja",
+      "adaptiveIcon": {
+        "backgroundColor": "#121110",
+        "foregroundImage": "./assets/adaptive-foreground.png"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

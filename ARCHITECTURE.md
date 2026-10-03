@@ -304,3 +304,11 @@ most mail clients.
 | Webhook not reaching production | Verify-on-return covers it; check Paystack's webhook log |
 | Mailgun sandbox recipients | Test with authorized addresses; README explains; screenshot of a real email |
 | Cold starts after idle | Edge caching, a friendly loading state, `GET /api/health` warm-up on first load |
+
+## Mobile app (`mobile/`, Task 3)
+
+- Expo SDK 57 (pinned for Expo Go 57.0.9), React Native, expo-router, TypeScript. Own `package.json`; `mobile/` is in `.vercelignore` so the website build ignores it.
+- It talks to the **production API** with the same Bearer token as the website (`src/lib/api.ts`) and uses Supabase only for Google sign-in and the session (`src/lib/supabase.ts`, PKCE, AsyncStorage). Public env values only, in `mobile/.env` (see `.env.example`).
+- Sign-in (`src/lib/auth.tsx`): `signInWithOAuth` with `skipBrowserRedirect`, then `WebBrowser.openAuthSessionAsync` (Chrome Custom Tabs, never a WebView: Google blocks those), then `exchangeCodeForSession`. `redirectTo` is `makeRedirectUri({ scheme: 'oja', path: 'auth-callback' })`: `exp://…/--/auth-callback` in Expo Go, `oja://auth-callback` in the installed app. After sign-in the app calls `GET /api/me`.
+- Sign-out is `scope: 'local'`: it signs out this device only.
+- `user_id` and the redirect URL are shown on the Account screen in development builds only.
