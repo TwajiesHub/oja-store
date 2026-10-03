@@ -34,7 +34,11 @@ def test_the_page_loads_nothing_from_elsewhere():
     assert not re.search(r"""(?:src|href)=["']https?://""", PAGE)
 
 
-def test_the_page_only_forwards_to_the_apps_own_addresses():
-    assert "oja://auth-callback" in PAGE
-    assert "exp:\\/\\/" in PAGE
-    assert "--\\/auth-callback" in PAGE
+def test_the_page_only_forwards_to_the_installed_apps_address():
+    script = re.search(r"<script>(.*)</script>", PAGE, re.S).group(1)
+
+    assert "'oja://auth-callback'" in script
+    # No other app scheme or address pattern is accepted: Expo Go (exp://) is not forwarded to.
+    assert "exp:" not in script and "exp\:" not in script
+    assert "PRIVATE_HOST" not in script
+    assert re.findall(r"[a-z][a-z0-9+.-]*://", script) == ["oja://"]

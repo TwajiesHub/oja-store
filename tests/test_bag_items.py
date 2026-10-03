@@ -245,15 +245,18 @@ def test_a_change_on_one_device_keeps_items_the_other_added(client, seeded, auth
 def test_adds_at_the_same_moment_all_count(client, seeded, auth):
     hoodie = variant(seeded, HOODIE)
     set_stock(seeded, hoodie, 50)
+    # Read the id once, here: touching `hoodie` inside a worker would refresh it through this
+    # test's own session from several threads at once, which SQLite rejects.
+    variant_id = hoodie.id
     headers = auth()
 
     def one_add(_):
         # The client fixture's database override applies app-wide, so each thread uses the test database.
         with TestClient(app) as other:
-            return other.post("/api/bag/items", json={"variant_id": hoodie.id, "quantity": 1}, headers=headers).status_code
+            return other.post("/api/bag/items", json={"variant_id": variant_id, "quantity": 1}, headers=headers).status_code
 
     with ThreadPoolExecutor(max_workers=6) as pool:
         statuses = list(pool.map(one_add, range(6)))
 
     assert statuses == [200] * 6
-    assert saved_rows(seeded, "user-a") == {hoodie.id: 6}
+    assert saved_rows(seeded, "user-a") == {variant_id: 6}

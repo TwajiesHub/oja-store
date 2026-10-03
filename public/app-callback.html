@@ -25,25 +25,21 @@
   <!--
     The Ọjà app signs in through the system browser. Google sends the sign-in result here, and this
     page hands it straight to the app's own address. It is a static page that loads nothing else:
-    it does not log, store or send the code anywhere, and it only ever forwards to exp:// or oja://.
+    it does not log, store or send the code anywhere, and it only ever forwards to oja://auth-callback.
   -->
   <script>
     (function () {
-      var PRIVATE_HOST = /^(localhost|10(\.\d{1,3}){3}|192\.168(\.\d{1,3}){2}|172\.(1[6-9]|2\d|3[01])(\.\d{1,3}){2}|[a-z0-9-]+(\.[a-z0-9-]+)*\.exp\.direct)$/i
+      var APP_ADDRESS = 'oja://auth-callback'
       var FORWARDED = ['code', 'error', 'error_code', 'error_description']
 
-      // Only the app's own sign-in address is allowed: oja://auth-callback (the installed app), or
-      // exp://<this phone's network address>/--/auth-callback (Expo Go while developing).
+      // The only address this page ever forwards to is the installed app's own sign-in address.
       function safeTarget(to) {
-        if (typeof to !== 'string') return null
-        if (to === 'oja://auth-callback') return to
-        var match = /^exp:\/\/([A-Za-z0-9.-]+)(:\d{1,5})?\/--\/auth-callback$/.exec(to)
-        return match && PRIVATE_HOST.test(match[1]) ? to : null
+        return to === APP_ADDRESS ? to : null
       }
 
       var params = new URLSearchParams(window.location.search)
       var fromHash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
-      var to = params.get('to') === null ? 'oja://auth-callback' : params.get('to')
+      var to = params.get('to') === null ? APP_ADDRESS : params.get('to')
       var target = safeTarget(to)
 
       var forward = new URLSearchParams()
