@@ -23,4 +23,5 @@ export const fonts = {
 } as const
 
 export const gutter = 20
+export const gap = 12
 export const minTouch = 48
