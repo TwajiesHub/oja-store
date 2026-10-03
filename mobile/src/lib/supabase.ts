@@ -1,6 +1,7 @@
 // The app uses Supabase only for Google sign-in and the session, like the website.
 // Every other piece of data goes through our own API (see api.ts).
 import 'react-native-url-polyfill/auto'
+import './crypto-polyfill'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createClient } from '@supabase/supabase-js'

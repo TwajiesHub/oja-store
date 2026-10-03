@@ -100,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: { redirectTo, skipBrowserRedirect: true },
     })
     if (error || !data.url) return 'Could not start Google sign-in. Please try again.'
+    if (__DEV__) console.log('[auth] code_challenge_method =', new URL(data.url).searchParams.get('code_challenge_method'))
 
     // Always the system browser (Chrome Custom Tabs on Android), never an embedded WebView:
     // Google blocks sign-in inside a WebView with "disallowed_useragent". It resolves when the
