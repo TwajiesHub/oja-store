@@ -1,4 +1,4 @@
-import { Link, router, useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
@@ -94,13 +94,15 @@ function ProductInfo({ product }: { product: ProductDetail }) {
   return (
     <View style={styles.info}>
       <View style={styles.heading}>
-        <Link href={{ pathname: '/brand/[slug]', params: { slug: product.brand.slug } }} asChild>
-          <Pressable accessibilityRole="link" style={styles.by}>
-            <Text style={styles.label}>
-              By {product.brand.name} · {product.brand_full.descriptor} ↗
-            </Text>
-          </Pressable>
-        </Link>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => router.push({ pathname: '/brand/[slug]', params: { slug: product.brand.slug } })}
+          style={styles.by}
+        >
+          <Text style={styles.label}>
+            By {product.brand.name} · {product.brand_full.descriptor} ↗
+          </Text>
+        </Pressable>
         <Text accessibilityRole="header" style={styles.name}>
           {product.name}
         </Text>

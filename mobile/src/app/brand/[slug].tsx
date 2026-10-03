@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 import ProductGrid from '@/components/ProductGrid'
@@ -43,11 +43,14 @@ export default function BrandPage() {
         <Text style={[kitText(brand.type_pairing, 26), styles.slogan]}>{brand.slogan}</Text>
         <Text style={styles.story}>{brand.story}</Text>
         {brand.edits.map((edit) => (
-          <Link key={edit.slug} href={{ pathname: '/edit/[slug]', params: { slug: edit.slug } }} asChild>
-            <Pressable accessibilityRole="link" style={styles.editLink}>
-              <Text style={styles.editLinkText}>Also in {edit.title.replace(/^The /, 'the ')} ↗</Text>
-            </Pressable>
-          </Link>
+          <Pressable
+            key={edit.slug}
+            accessibilityRole="link"
+            onPress={() => router.push({ pathname: '/edit/[slug]', params: { slug: edit.slug } })}
+            style={styles.editLink}
+          >
+            <Text style={styles.editLinkText}>Also in {edit.title.replace(/^The /, 'the ')} ↗</Text>
+          </Pressable>
         ))}
       </View>
 

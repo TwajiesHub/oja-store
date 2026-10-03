@@ -1,5 +1,5 @@
 import { Image } from 'expo-image'
-import { Link, router } from 'expo-router'
+import { router } from 'expo-router'
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -29,19 +29,20 @@ function pickArrivals(featured: ProductCardData[]): ProductCardData[] {
 
 function EditTile({ edit, number }: { edit: EditSummary; number: number }) {
   return (
-    <Link href={{ pathname: '/edit/[slug]', params: { slug: edit.slug } }} asChild>
-      <Pressable
-        accessibilityRole="link"
-        accessibilityLabel={`${edit.title}, ${edit.piece_count} pieces`}
-        style={({ pressed }) => [styles.edit, { backgroundColor: edit.accent }, pressed && { opacity: 0.85 }]}
-      >
-        <Text style={[styles.editLabel, { color: edit.accent_text }]}>
-          N° {String(number).padStart(2, '0')} · {edit.kicker}
-        </Text>
-        <Text style={[styles.editTitle, { color: edit.accent_text }]}>{edit.title}</Text>
-        <Text style={[styles.editLabel, { color: edit.accent_text }]}>{edit.piece_count} pieces ↗</Text>
-      </Pressable>
-    </Link>
+    // The press handler is on the Pressable itself: a Link asChild drops a function style, which is
+    // what left these tiles with no background.
+    <Pressable
+      accessibilityRole="link"
+      accessibilityLabel={`${edit.title}, ${edit.piece_count} pieces`}
+      onPress={() => router.push({ pathname: '/edit/[slug]', params: { slug: edit.slug } })}
+      style={({ pressed }) => [styles.edit, { backgroundColor: edit.accent }, pressed && { opacity: 0.85 }]}
+    >
+      <Text style={[styles.editLabel, { color: edit.accent_text }]}>
+        N° {String(number).padStart(2, '0')} · {edit.kicker}
+      </Text>
+      <Text style={[styles.editTitle, { color: edit.accent_text }]}>{edit.title}</Text>
+      <Text style={[styles.editLabel, { color: edit.accent_text }]}>{edit.piece_count} pieces ↗</Text>
+    </Pressable>
   )
 }
 
@@ -52,9 +53,14 @@ function SectionHead({ children, link }: { children: React.ReactNode; link?: { l
         {children}
       </Text>
       {link ? (
-        <Link href={link.href} style={styles.link} accessibilityRole="link">
-          {link.label}
-        </Link>
+        // The text sits on the heading's baseline; the hit slop around it is the 48dp touch area.
+        <Pressable
+          accessibilityRole="link"
+          hitSlop={{ top: 16, bottom: 16, left: 12, right: 12 }}
+          onPress={() => router.push(link.href)}
+        >
+          <Text style={styles.link}>{link.label}</Text>
+        </Pressable>
       ) : null}
     </View>
   )
@@ -148,7 +154,7 @@ const styles = StyleSheet.create({
   section: { paddingHorizontal: gutter, paddingTop: 32, marginTop: 32, gap: 16, borderTopWidth: 1, borderTopColor: colors.line },
   sectionHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', gap: 12 },
   h2: { flexShrink: 1, fontFamily: fonts.display, fontSize: 28, lineHeight: 32, color: colors.ink },
-  link: { fontFamily: fonts.monoMedium, fontSize: 13, letterSpacing: 0.8, textTransform: 'uppercase', color: colors.ink, paddingVertical: 14 },
+  link: { fontFamily: fonts.monoMedium, fontSize: 13, letterSpacing: 0.8, textTransform: 'uppercase', color: colors.ink },
   tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   edits: { gap: 12 },
   edit: { minHeight: 140, padding: 16, justifyContent: 'space-between', gap: 12 },

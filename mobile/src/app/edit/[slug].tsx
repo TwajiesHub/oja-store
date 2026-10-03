@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 import { ProductImage } from '@/components/ProductCard'
@@ -25,19 +25,18 @@ function Piece({ item, number }: { item: EditItem; number: number }) {
     ? `${product.price_varies ? 'from ' : ''}${formatNaira(product.from_price_kobo)}`
     : formatNaira(item.default_variant.price_kobo)
   return (
-    <Link href={{ pathname: '/product/[slug]', params: { slug: product.slug } }} asChild>
-      <Pressable
-        accessibilityRole="link"
-        accessibilityLabel={`${itemTitle(item)}, ${price}${item.available ? '' : ', sold out'}`}
-        style={({ pressed }) => [styles.piece, pressed && { opacity: 0.85 }]}
-      >
-        <Text style={styles.number}>N° {String(number).padStart(2, '0')}</Text>
-        <ProductImage product={product} />
-        <Text style={styles.note}>“{item.note}”</Text>
-        <Text style={styles.pieceName}>{itemTitle(item)}</Text>
-        <Text style={styles.price}>{item.available ? price : 'Sold out'}</Text>
-      </Pressable>
-    </Link>
+    <Pressable
+      accessibilityRole="link"
+      accessibilityLabel={`${itemTitle(item)}, ${price}${item.available ? '' : ', sold out'}`}
+      onPress={() => router.push({ pathname: '/product/[slug]', params: { slug: product.slug } })}
+      style={({ pressed }) => [styles.piece, pressed && { opacity: 0.85 }]}
+    >
+      <Text style={styles.number}>N° {String(number).padStart(2, '0')}</Text>
+      <ProductImage product={product} />
+      <Text style={styles.note}>“{item.note}”</Text>
+      <Text style={styles.pieceName}>{itemTitle(item)}</Text>
+      <Text style={styles.price}>{item.available ? price : 'Sold out'}</Text>
+    </Pressable>
   )
 }
 
