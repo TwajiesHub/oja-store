@@ -9,8 +9,9 @@ import ProductGrid from '@/components/ProductGrid'
 import QuantityStepper from '@/components/QuantityStepper'
 import ScreenScroll from '@/components/ScreenScroll'
 import { EmptyState, ErrorState, Loading } from '@/components/States'
-import { ApiError, apiPost } from '@/lib/api'
+import { ApiError } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
+import { useBag } from '@/lib/bag'
 import { formatNaira } from '@/lib/money'
 import { colors, fonts, gutter } from '@/lib/theme'
 import type { ProductCardData, ProductDetail } from '@/lib/types'
@@ -30,6 +31,7 @@ function stockLine(variant: ProductDetail['variants'][number] | undefined): stri
 
 function ProductInfo({ product }: { product: ProductDetail }) {
   const { session } = useAuth()
+  const bag = useBag()
   // A clothing size is the shopper's choice, so none is preselected. Other options are.
   const firstInStock = product.variants.find((v) => v.stock > 0) ?? product.variants[0]
   const [variantId, setVariantId] = useState<number | null>(product.needs_size ? null : firstInStock.id)
@@ -68,17 +70,14 @@ function ProductInfo({ product }: { product: ProductDetail }) {
     }
     setBusy(true)
     setNote('')
-    try {
-      // The server prices and clamps the add; the app only says which variant and how many.
-      await apiPost('/bag/items', { variant_id: variant.id, quantity }, { auth: true })
-      setAdded(true)
-    } catch (failure) {
-      if (failure instanceof ApiError && failure.status === 409) setNote(failure.detail ?? 'Sorry, that item is sold out.')
-      else if (failure instanceof ApiError && failure.status === 404) setNote('That item is no longer available.')
-      else setNote('Could not add that to your bag. Please try again.')
-    } finally {
-      setBusy(false)
-    }
+    // The server prices and clamps the add; the app only says which variant and how many. The bag
+    // (and the Bag tab's badge) update from the server's answer.
+    const failure = await bag.add(variant.id, quantity)
+    setBusy(false)
+    if (!failure) setAdded(true)
+    else if (failure instanceof ApiError && failure.status === 409) setNote(failure.detail ?? 'Sorry, that item is sold out.')
+    else if (failure instanceof ApiError && failure.status === 404) setNote('That item is no longer available.')
+    else setNote('Could not add that to your bag. Please try again.')
   }
 
   const addLabel = soldOut

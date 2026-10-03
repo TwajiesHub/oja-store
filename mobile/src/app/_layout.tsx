@@ -17,6 +17,7 @@ import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 
 import { AuthProvider } from '@/lib/auth'
+import { BagProvider } from '@/lib/bag'
 import { colors, fonts } from '@/lib/theme'
 
 SplashScreen.preventAutoHideAsync()
@@ -48,6 +49,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      <BagProvider>
       <Stack
         screenOptions={{
           contentStyle: { backgroundColor: colors.paper },
@@ -65,6 +67,7 @@ export default function RootLayout() {
         <Stack.Screen name="product/[slug]" options={{ title: '' }} />
         <Stack.Screen name="edit/[slug]" options={{ title: '' }} />
       </Stack>
+      </BagProvider>
     </AuthProvider>
   )
 }

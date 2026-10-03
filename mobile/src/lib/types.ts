@@ -72,3 +72,26 @@ export type EditItem = {
 }
 
 export type EditDetail = EditSummary & { items: EditItem[]; available_count: number; total_kobo: number }
+
+export type BagLine = {
+  variant_id: number
+  product_slug: string
+  product_name: string
+  variant_label: string
+  brand: BrandKitData
+  unit_price_kobo: number
+  stock: number
+  image_url: string | null
+  requested_quantity: number
+  quantity: number
+  line_total_kobo: number
+  issue: 'sold_out' | 'reduced' | null
+}
+
+export type BagQuote = {
+  lines: BagLine[]
+  removed_variant_ids: number[]
+  item_count: number
+  subtotal_kobo: number
+  free_delivery_remaining_kobo: number
+}

@@ -1,9 +1,11 @@
 import { Tabs } from 'expo-router'
 
+import { useBag } from '@/lib/bag'
 import { colors, fonts } from '@/lib/theme'
 
 // Text-only tabs, like the website's nav: no icon pack, the type does the work.
 export default function TabsLayout() {
+  const { count } = useBag()
   return (
     <Tabs
       screenOptions={{
@@ -20,7 +22,7 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen name="index" options={{ title: 'Shop' }} />
-      <Tabs.Screen name="bag" options={{ title: 'Bag' }} />
+      <Tabs.Screen name="bag" options={{ title: 'Bag', tabBarBadge: count > 0 ? count : undefined }} />
       <Tabs.Screen name="account" options={{ title: 'Account' }} />
     </Tabs>
   )

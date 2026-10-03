@@ -7,7 +7,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "typecheck": "tsc --noEmit",
-    "doctor": "expo-doctor"
+    "doctor": "expo-doctor",
+    "test": "node --test src/lib/bagLogic.test.ts"
   },
   "dependencies": {
     "@expo-google-fonts/archivo": "^0.4.2",
