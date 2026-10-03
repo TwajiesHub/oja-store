@@ -39,6 +39,6 @@ def test_the_page_only_forwards_to_the_installed_apps_address():
 
     assert "'oja://auth-callback'" in script
     # No other app scheme or address pattern is accepted: Expo Go (exp://) is not forwarded to.
-    assert "exp:" not in script and "exp\:" not in script
+    assert "exp:" not in script and r"exp\:" not in script
     assert "PRIVATE_HOST" not in script
     assert re.findall(r"[a-z][a-z0-9+.-]*://", script) == ["oja://"]
