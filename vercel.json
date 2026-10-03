@@ -3,8 +3,18 @@
   "functions": {
     "api/index.py": { "includeFiles": "api/emails/**" }
   },
+  "headers": [
+    {
+      "source": "/app-callback",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/app-callback", "destination": "/app-callback.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

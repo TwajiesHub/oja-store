@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex">
+  <title>Opening Ọjà</title>
+  <style>
+    :root { color-scheme: light; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #F4F1EA; color: #121110; font-family: Archivo, system-ui, sans-serif; }
+    main { max-width: 360px; padding: 24px; }
+    h1 { margin: 0 0 12px; font-size: 32px; line-height: 1.1; font-weight: 900; }
+    p { margin: 0 0 20px; color: #665F56; line-height: 1.5; }
+    a.button { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 0 24px; background: #121110; color: #F4F1EA; font-weight: 700; text-decoration: none; }
+    a.button:focus-visible { outline: 3px solid #1F6F6B; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Opening the Ọjà app</h1>
+    <p id="message">One moment. If the app does not open, tap the button.</p>
+    <a id="open" class="button" href="#" hidden>Open the Ọjà app</a>
+  </main>
+  <!--
+    The Ọjà app signs in through the system browser. Google sends the sign-in result here, and this
+    page hands it straight to the app's own address. It is a static page that loads nothing else:
+    it does not log, store or send the code anywhere, and it only ever forwards to exp:// or oja://.
+  -->
+  <script>
+    (function () {
+      var PRIVATE_HOST = /^(localhost|10(\.\d{1,3}){3}|192\.168(\.\d{1,3}){2}|172\.(1[6-9]|2\d|3[01])(\.\d{1,3}){2}|[a-z0-9-]+(\.[a-z0-9-]+)*\.exp\.direct)$/i
+      var FORWARDED = ['code', 'error', 'error_code', 'error_description']
+
+      // Only the app's own sign-in address is allowed: oja://auth-callback (the installed app), or
+      // exp://<this phone's network address>/--/auth-callback (Expo Go while developing).
+      function safeTarget(to) {
+        if (typeof to !== 'string') return null
+        if (to === 'oja://auth-callback') return to
+        var match = /^exp:\/\/([A-Za-z0-9.-]+)(:\d{1,5})?\/--\/auth-callback$/.exec(to)
+        return match && PRIVATE_HOST.test(match[1]) ? to : null
+      }
+
+      var params = new URLSearchParams(window.location.search)
+      var fromHash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+      var to = params.get('to') === null ? 'oja://auth-callback' : params.get('to')
+      var target = safeTarget(to)
+
+      var forward = new URLSearchParams()
+      FORWARDED.forEach(function (key) {
+        var value = params.get(key) !== null ? params.get(key) : fromHash.get(key)
+        if (value !== null) forward.set(key, value)
+      })
+
+      // Take the code out of the address bar and history before doing anything else.
+      try { window.history.replaceState(null, '', window.location.pathname) } catch (e) {}
+
+      var message = document.getElementById('message')
+      var button = document.getElementById('open')
+      if (!target) {
+        message.textContent = 'This link is not valid. Please go back to the app and try signing in again.'
+      } else if (!forward.has('code') && !forward.has('error')) {
+        message.textContent = 'There is nothing to hand over. Please go back to the app and try signing in again.'
+      } else {
+        var url = target + '?' + forward.toString()
+        button.href = url
+        button.hidden = false
+        window.location.replace(url)
+      }
+    })()
+  </script>
+</body>
+</html>
