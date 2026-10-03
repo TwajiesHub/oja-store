@@ -64,8 +64,10 @@ the same change.
    `node_modules/` or `dist/`. Keep `.gitignore` and `.env.example` up to date
    (names only, no values).
 9. The browser talks to our FastAPI backend (`/api/...`) for all data. It uses
-   Supabase directly **only for Google sign-in and the session**. Tables are not
-   exposed through Supabase's Data API, and Row Level Security stays on.
+   Supabase directly **only for Google sign-in, the session and Realtime "bag
+   changed" signals** (clients then re-fetch `GET /api/bag`). Tables are not
+   exposed through Supabase's Data API, and Row Level Security stays on. The one
+   exception is a select-own-rows policy on `bag_items` for Realtime.
 10. Every endpoint that touches a user's data verifies the Supabase access token
     and only ever reads or writes that user's rows.
 
@@ -117,6 +119,9 @@ Seeding Supabase (only when I ask): put the **session pooler** string (port 5432
 | M5 | `checkout` | Checkout page, order creation, Paystack initialise, callback page states, webhook and verify, stock. | Fri morning |
 | M6 | `email` | Mailgun confirmation email after payment; "Your orders" pages. | Fri midday |
 | M7 | `polish` | Privacy and terms pages, 404, empty and error states, mobile pass, README, brand hero illustrations for Elú, Ivie and Kade, full keyboard-only pass across all pages, a script or documented steps to remove test orders and reset stock to the seed values before submission (run only when asked), one test purchase on production with a check that Paystack's webhook delivered successfully. | Fri afternoon |
+
+Task 3 (the mobile app) has its own plan in `TASK3.md`, milestones T0 to T5,
+read it alongside this file for that work.
 
 Merge each milestone before starting the next. If time runs short, cut from the
 bottom of M7, never from payments (M5) or email (M6).

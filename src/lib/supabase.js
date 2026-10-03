@@ -16,20 +16,6 @@ export const supabase =
 
 export const authAvailable = supabase !== null
 
-// The current access token, kept where it can be read without waiting. A page that is closing
-// cannot await anything, but it can still hand a request to the browser (see apiPutOnExit).
-let latestAccessToken = null
-if (supabase) {
-  supabase.auth.getSession().then(({ data }) => {
-    latestAccessToken = data.session?.access_token ?? null
-  })
-  supabase.auth.onAuthStateChange((_event, session) => {
-    latestAccessToken = session?.access_token ?? null
-  })
-}
-
-export const getLatestAccessToken = () => latestAccessToken
-
 // Signs in with Google and comes back to `returnPath` on this same site, so the redirect is
 // right on localhost, on a Vercel preview and in production.
 export async function signInWithGoogle(returnPath) {

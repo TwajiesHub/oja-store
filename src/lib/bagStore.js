@@ -6,7 +6,13 @@ const STORAGE_KEY = 'oja.bag'
 const MAX_QUANTITY = 10
 
 const listeners = new Set()
-const localChangeListeners = new Set()
+
+// Signed in, bagSync registers handlers here so each shopper action is also sent to the server as
+// its own item call (never as a whole-bag snapshot). Signed out there is none: the bag stays local.
+let remote = null
+export function setRemote(handlers) {
+  remote = handlers
+}
 
 function isValidEntry(entry) {
   return (
@@ -28,8 +34,7 @@ function readStorage() {
 
 let items = readStorage()
 
-// `byShopper` is false when the server, not the shopper, changed the bag (so it is not sent back).
-function publish(next, byShopper = true) {
+function publish(next) {
   items = next
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
@@ -37,7 +42,6 @@ function publish(next, byShopper = true) {
     // Private windows can refuse storage; the bag then lasts for this page view only.
   }
   listeners.forEach((listener) => listener())
-  if (byShopper) localChangeListeners.forEach((listener) => listener())
 }
 
 // Keep several open tabs in step.
@@ -51,12 +55,6 @@ window.addEventListener('storage', (event) => {
 export function subscribe(listener) {
   listeners.add(listener)
   return () => listeners.delete(listener)
-}
-
-// Called only when the shopper changes the bag (add, quantity, remove).
-export function onShopperChange(listener) {
-  localChangeListeners.add(listener)
-  return () => localChangeListeners.delete(listener)
 }
 
 export function getItems() {
@@ -78,16 +76,20 @@ export function addToBag(variantId, quantity, stock, priceKobo) {
 
   const entry = { variant_id: variantId, quantity: current + added, seen_price_kobo: priceKobo }
   publish(existing ? items.map((item) => (item === existing ? entry : item)) : [...items, entry])
+  remote?.add(variantId, added)
   return added
 }
 
 export function setQuantity(variantId, quantity) {
-  updateEntry(variantId, { quantity: Math.min(Math.max(quantity, 1), MAX_QUANTITY) })
+  const next = Math.min(Math.max(quantity, 1), MAX_QUANTITY)
+  updateEntry(variantId, { quantity: next })
+  remote?.setQuantity(variantId, next)
 }
 
 export function removeFromBag(variantIds) {
   const gone = new Set(variantIds)
   publish(items.filter((item) => !gone.has(item.variant_id)))
+  variantIds.forEach((variantId) => remote?.remove(variantId))
 }
 
 // The shopper has seen the current price (or this item never had one recorded).
@@ -97,9 +99,9 @@ export function acknowledgePrice(variantId, priceKobo) {
 
 // For bagSync only: swap in the saved bag from the server, or empty the bag on sign-out.
 export function replaceItems(next) {
-  publish(next, false)
+  publish(next)
 }
 
 export function clearBag() {
-  publish([], false)
+  publish([])
 }

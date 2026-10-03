@@ -124,6 +124,10 @@ class BagItemIn(BaseModel):
     quantity: int = Field(ge=1, le=MAX_QUANTITY)
 
 
+class BagItemQuantity(BaseModel):
+    quantity: int = Field(ge=1, le=MAX_QUANTITY)
+
+
 class BagQuoteRequest(BaseModel):
     # Only ids and quantities are read. Any price in the request body is ignored.
     items: list[BagItemIn] = Field(max_length=MAX_BAG_LINES)

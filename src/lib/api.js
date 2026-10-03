@@ -1,5 +1,5 @@
 // The one place the browser talks to our backend.
-import { getAccessToken, getLatestAccessToken, refreshAccessToken, signOutOfSupabase } from './supabase.js'
+import { getAccessToken, refreshAccessToken, signOutOfSupabase } from './supabase.js'
 
 // `detail` is the server's message for the shopper (a 409 or 502). `fieldErrors` maps a form
 // field to its message when the server rejected a value (a 422).
@@ -62,19 +62,7 @@ async function request(method, path, body, { auth = false } = {}) {
   return response.json()
 }
 
-// For a page that is being hidden or closed. `keepalive` lets the browser finish the request after
-// the page is gone. It cannot wait for a refreshed token, so it uses the latest one it has.
-export function apiPutOnExit(path, body) {
-  const token = getLatestAccessToken()
-  if (!token) return
-  fetch(`/api${path}`, {
-    method: 'PUT',
-    keepalive: true,
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify(body),
-  }).catch(() => {})
-}
-
 export const apiGet = (path, options) => request('GET', path, undefined, options)
 export const apiPost = (path, body, options) => request('POST', path, body, options)
-export const apiPut = (path, body, options) => request('PUT', path, body, options)
+export const apiPatch = (path, body, options) => request('PATCH', path, body, options)
+export const apiDelete = (path, options) => request('DELETE', path, undefined, options)

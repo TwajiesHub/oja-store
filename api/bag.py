@@ -1,8 +1,8 @@
 """The bag: a public quote for guests, and the signed-in user's saved bag."""
 from collections.abc import Callable
 
-from fastapi import APIRouter, Depends
-from sqlalchemy import delete
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import case, delete, update
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
@@ -11,7 +11,7 @@ from api.catalogue import brand_kit
 from api.db import get_session
 from api.models import BagItem, Brand, Product, Variant, utc_now
 from api.pricing import MAX_QUANTITY, free_delivery_remaining_kobo
-from api.schemas import BagQuote, BagQuoteLine, BagQuoteRequest
+from api.schemas import BagItemIn, BagItemQuantity, BagQuote, BagQuoteLine, BagQuoteRequest
 
 router = APIRouter(prefix="/api/bag")
 
@@ -135,3 +135,72 @@ def merge_bag(body: BagQuoteRequest, user: AuthUser = Depends(current_user),
 
     saved = save_with_retry(session, user.user_id, combined)
     return quote_items(session, saved)
+
+
+# Item-level changes. Each one touches a single line, so two devices editing at once never
+# overwrite each other's items the way a whole-bag PUT can.
+
+def sellable_variant(session: Session, variant_id: int) -> Variant:
+    found = purchasable_variants(session, [variant_id]).get(variant_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="That item is not available.")
+    return found[0]
+
+
+def current_bag(session: Session, user_id: str) -> BagQuote:
+    session.expire_all()
+    return quote_items(session, saved_quantities(session, user_id))
+
+
+def line_filter(user_id: str, variant_id: int):
+    return (BagItem.user_id == user_id, BagItem.variant_id == variant_id)
+
+
+@router.post("/items", response_model=BagQuote)
+def add_item(body: BagItemIn, user: AuthUser = Depends(current_user),
+             session: Session = Depends(get_session)) -> BagQuote:
+    """Adds to the quantity already in the bag, in one atomic step, capped at stock and 10."""
+    variant = sellable_variant(session, body.variant_id)
+    if variant.stock == 0:
+        raise HTTPException(status_code=409, detail="Sorry, that item is sold out.")
+    cap = min(variant.stock, MAX_QUANTITY)
+    grown = BagItem.quantity + body.quantity
+    bump = update(BagItem).where(*line_filter(user.user_id, variant.id)).values(
+        quantity=case((grown > cap, cap), else_=grown), updated_at=utc_now())
+
+    if session.exec(bump).rowcount == 0:
+        session.add(BagItem(user_id=user.user_id, variant_id=variant.id,
+                            quantity=min(body.quantity, cap), updated_at=utc_now()))
+        try:
+            session.commit()
+        except IntegrityError:
+            # Another request created the line first; add on top of it instead.
+            session.rollback()
+            session.exec(bump)
+            session.commit()
+    else:
+        session.commit()
+    return current_bag(session, user.user_id)
+
+
+@router.patch("/items/{variant_id}", response_model=BagQuote)
+def set_item_quantity(variant_id: int, body: BagItemQuantity, user: AuthUser = Depends(current_user),
+                      session: Session = Depends(get_session)) -> BagQuote:
+    """Sets the quantity of a line already in the bag, capped at stock (a sold-out line keeps 1)."""
+    variant = sellable_variant(session, variant_id)
+    result = session.exec(update(BagItem).where(*line_filter(user.user_id, variant_id)).values(
+        quantity=storable_quantity(body.quantity, variant.stock), updated_at=utc_now()))
+    if result.rowcount == 0:
+        session.rollback()
+        raise HTTPException(status_code=404, detail="That item is not in your bag.")
+    session.commit()
+    return current_bag(session, user.user_id)
+
+
+@router.delete("/items/{variant_id}", response_model=BagQuote)
+def remove_item(variant_id: int, user: AuthUser = Depends(current_user),
+                session: Session = Depends(get_session)) -> BagQuote:
+    """Removes a line. Safe to repeat: removing something already gone just returns the bag."""
+    session.exec(delete(BagItem).where(*line_filter(user.user_id, variant_id)))
+    session.commit()
+    return current_bag(session, user.user_id)

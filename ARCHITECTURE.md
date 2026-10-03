@@ -26,7 +26,7 @@ Tests: pytest ──▶ temporary SQLite, Paystack and Mailgun mocked
 | --- | --- |
 | React + Vite + React Router, plain JavaScript | Same toolchain as Task 1, fast to build; the store needs real pages and URLs. |
 | FastAPI + SQLModel on Vercel | Proven in Task 1. Secret keys (Paystack, Mailgun, database) stay on the server. |
-| **All data goes through FastAPI**; the browser uses Supabase only for auth | One place for validation and pricing. Tables are not exposed through Supabase's Data API and RLS is on with no public policies, so the database is locked to everything except our backend. |
+| **All data goes through FastAPI**; the browser uses Supabase only for auth, plus Realtime "your bag changed" signals | One place for validation and pricing. Tables are not exposed through Supabase's Data API and RLS is on. The one exception is `bag_items`: a signed-in user may `select` only their own rows (`scripts/sql/realtime_bag_items.sql`) so Realtime can tell their devices the bag changed. Clients never read bag data from Supabase; they re-fetch `GET /api/bag`. |
 | Supabase Postgres in production, SQLite locally and in tests | Same SQLModel code, switched by `DATABASE_URL`. Local work and tests never touch real data. Keep SQL portable. |
 | Money as integer kobo everywhere | No rounding errors; Paystack also uses kobo. |
 | Server-side bag for signed-in users, localStorage for guests | Checkout builds the order from the server bag, never from browser-sent prices. |
@@ -162,7 +162,10 @@ Base path `/api`. JSON in snake_case. Money in kobo. Errors use FastAPI's
 | `GET /api/me` | | profile (created from the token on first call) |
 | `PUT /api/me` | name, phone, address fields | profile |
 | `GET /api/bag` | | the saved bag as the priced quote (same shape as `POST /api/bag/quote`); items no longer sold are reported once and removed |
-| `PUT /api/bag` | `{items: [{variant_id, quantity}]}` | replaces the whole bag and returns the priced quote. Quantities are clamped to stock and 10; a sold-out item keeps 1 so it still shows, flagged; unknown variants are dropped |
+| `POST /api/bag/items` | `{variant_id, quantity}` | adds to the quantity already in the bag (one atomic step), capped at stock and 10, and returns the quote. 404 unknown or inactive variant, 409 sold out, 422 bad quantity |
+| `PATCH /api/bag/items/{variant_id}` | `{quantity}` | sets the quantity (1 to 10, capped at stock) of a line already in the bag; 404 if the line or variant isn't there; returns the quote |
+| `DELETE /api/bag/items/{variant_id}` | | removes the line; safe to repeat; returns the quote |
+| `PUT /api/bag` | `{items: [{variant_id, quantity}]}` | replaces the whole bag and returns the priced quote. Kept for compatibility; the website no longer uses it, because a whole-bag write from a stale device would overwrite another device's items. Quantities are clamped to stock and 10; a sold-out item keeps 1 so it still shows, flagged; unknown variants are dropped |
 | `POST /api/bag/merge` | `{items: [{variant_id, quantity}]}` | adds a guest bag into the saved one when someone signs in (quantities add up, capped at stock and 10) and returns the quote. Done on the server so two tabs signing in cannot double-count |
 | `POST /api/checkout/quote` | `{state, delivery_speed}` | the saved bag with delivery and total from the server rules, plus `delivery_options` (each speed with its fee, or unavailable: express outside Lagos). 422 for an unknown state or an unavailable speed. The checkout page shows these numbers instead of copying the fee rules |
 | `POST /api/checkout` | delivery fields + `delivery_speed` + `save_address` | `{order_number, authorization_url, reference}`; 409 if the bag is empty or anything is out of stock; 422 for bad details; 502 if Paystack cannot be reached (the order stays pending) |
@@ -181,7 +184,7 @@ Base path `/api`. JSON in snake_case. Money in kobo. Errors use FastAPI's
 2. Supabase handles Google and returns the user with a session. `useAuth` exposes the user and access token.
 3. `api.js` adds `Authorization: Bearer <token>` to signed-in requests.
 4. `auth.py` verifies the token with `PyJWKClient(SUPABASE_JWKS_URL)` (keys cached for an hour): signature, expiry, `aud == "authenticated"`, issuer `<SUPABASE_URL>/auth/v1`. The user id is `sub`.
-5. On sign-in, `lib/bagSync.js` merges the guest bag with `POST /api/bag/merge`. The browser bag then mirrors the saved bag, and every change is saved with `PUT /api/bag` (debounced). The mirror remembers whose it is (`oja.bag.owner`): on later visits it loads `GET /api/bag` instead of merging, and a bag that belongs to someone else is dropped. Signing out empties it.
+5. On sign-in, `lib/bagSync.js` merges the guest bag with `POST /api/bag/merge`. The browser bag then mirrors the saved bag, and every add, set-quantity and remove is sent straight away as its own item call (`POST`, `PATCH`, `DELETE /api/bag/items`), in order, with no whole-bag snapshots. The bag also listens to Supabase Realtime on `bag_items` (INSERT and UPDATE filtered to `user_id`, any DELETE), and on any event, when the tab becomes visible and after a reconnect it re-fetches `GET /api/bag` (debounced about 250 ms, and held back while the shopper's own calls are in flight). The mirror remembers whose it is (`oja.bag.owner`): on later visits it loads `GET /api/bag` instead of merging, and a bag that belongs to someone else is dropped. Signing out empties it.
 
 In M4, confirm the project's JWKS returns keys. If it's empty (legacy shared-secret
 signing), switch verification to calling `<SUPABASE_URL>/auth/v1/user` with the
